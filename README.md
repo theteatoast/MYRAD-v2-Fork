@@ -1,96 +1,176 @@
-# MYRAD — Decentralized Data Marketplace
+# MYRAD — Privacy-First Data Network
 
 **Live Demo:** [https://myradhq.xyz/](https://myradhq.xyz/)
 
+> *You Own Your Data. Now, Get Rewarded for It.*
+
+## Overview
+
+MYRAD is a privacy-first data network that transforms your app activity into rewards—secured by **zero-knowledge proofs**. Your data stays private. Your rewards stay real.
+
+We enable users to monetize their behavioral data from apps like Zomato and Swiggy without ever exposing raw data or personally identifiable information (PII). Enterprises get access to compliant, anonymized insights while users maintain complete control.
+
+---
+
+## How It Works
+
+### For Users
+
+1. **Quick & Secure Login**  
+   Use your email or social accounts to sign up instantly with Privy Auth. No wallet setup required.
+
+2. **Contribute Data Privately**  
+   Connect apps like Zomato or Swiggy. We use the **Reclaim Protocol** to verify your order history without seeing the raw data.
+
+3. **Proof Verified**  
+   The system receives a **Zero-Knowledge Proof**—a cryptographic guarantee that your activity is real. No raw logs, no PII ever leaves your device.
+
+4. **Get Your Points**  
+   For every verified, anonymous insight you contribute, you're instantly credited with Points. Track your balance on your dashboard!
+
+### For Buyers (Enterprises)
+
+- **API Access** to anonymized, aggregated data
+- **Real Behavioral Insights** from consented users
+- **GDPR & CCPA Compliant** data pipelines
+- **User-Consented Data Only** — ethical by design
+
+---
+
 ## Architecture
 
-MYRAD is a decentralized data marketplace built on the Base blockchain that enables users to tokenize, trade, and monetize datasets through an automated market maker (AMM) system.
+### Tech Stack
 
-### System Components
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18, TypeScript, Vite |
+| **Styling** | Vanilla CSS with modern design system |
+| **Authentication** | Privy Auth (email, social, wallet) |
+| **Data Verification** | Reclaim Protocol (ZK Proofs) |
+| **Backend** | Express.js REST API |
+| **Database** | PostgreSQL |
 
-#### Smart Contracts
-- **DataCoin (ERC20)**: Represents individual datasets as ERC20 tokens with burn functionality
-- **BondingCurve**: Constant product AMM (x × y = k) for trading dataset tokens against USDC
-- **DataCoinFactory**: Creates new DataCoin tokens and manages dataset metadata
-- **DataTokenMarketplace**: Legacy marketplace contract for older tokens
+### Core Technologies
 
-#### Frontend
-- **React 18** with TypeScript
-- **Wagmi** for Web3 wallet connections
-- **Vite** for fast development and building
-- **TailwindCSS** for styling
-- **React Router** for navigation
+- **🔐 Reclaim Protocol**  
+  Enables zero-knowledge verification of user data from third-party apps. Users prove their activity without revealing raw data.
 
-#### Backend
-- **Express.js** REST API server
-- **ethers.js v6** for blockchain interactions
-- **Event Listener**: Monitors blockchain for burn events and grants download access
-- **PostgreSQL**: Stores dataset metadata, user connections, and transaction history
-- **IPFS/Lighthouse**: Decentralized storage for dataset files
+- **🛡️ Zero-Knowledge Proofs**  
+  Cryptographic proofs ensure data authenticity while maintaining complete privacy. No PII is ever stored or transmitted.
 
-#### Blockchain Network
-- **Base Sepolia** (Testnet)
-- **USDC** as the base trading pair
+- **🔑 Privy Auth**  
+  Seamless authentication supporting email, social logins, and wallet connections. Users can start earning without crypto knowledge.
 
-### How It Works
+---
 
-1. **Dataset Upload**: Users upload datasets to IPFS via Lighthouse, receiving a CID (Content Identifier)
-2. **Token Creation**: A DataCoin ERC20 token is minted representing the dataset
-3. **Pool Initialization**: Creator seeds liquidity pool with tokens and USDC (e.g., 900,000 tokens + 1 USDC)
-4. **Trading**: Users can buy/sell tokens using the constant product AMM formula
-5. **Burn for Access**: Users burn tokens (minimum $0.5 worth) to unlock dataset download access
-6. **Access Control**: Backend listener detects burn events and issues JWT tokens for secure download links
+## Features
 
-### Key Features
+### Privacy-First Design
+- ✅ No raw data collection
+- ✅ Zero-Knowledge verification
+- ✅ User-controlled data deletion
+- ✅ End-to-end privacy
 
-- **Tokenization**: Each dataset is represented as an ERC20 token
-- **Automated Market Making**: Constant product formula ensures liquidity
-- **Burn-to-Download**: Access control through token burning
-- **Fee Distribution**: 5% fee on buys (80% to liquidity, 5% to creator, 5% to treasury)
-- **Decentralized Storage**: Datasets stored on IPFS with Lighthouse gateway
-- **Real-time Updates**: Event listener monitors blockchain for instant access grants
+### User Rewards
+- 🎁 100 points welcome bonus
+- 💰 500 points per data contribution
+- 📊 Real-time points tracking
+- 🔄 Full control over contributions
 
-## Demo
+### Enterprise Access
+- 📡 RESTful API for data access
+- 📈 Aggregated behavioral analytics
+- ⚖️ GDPR & CCPA compliance
+- 🤝 Ethical, consented data only
 
-### Walk Through Demo
-This guide will help you get started step by step
+---
 
-#### 1. Launch the App & Connect Your Wallet
-Hit Launch App and connect your wallet.
+## Getting Started
 
-**Connect Wallet**
+### Prerequisites
 
-#### 2. Get Testnet USDC + ETH
-Visit the faucet and grab some USDC and ETH for testing
+- Node.js 18+
+- npm or yarn
 
-**Faucet**
+### Installation
 
-#### 3. Buy, Sell, or Burn a Dataset
-Try interacting with any dataset in the Feed or Marketplace:
+```bash
+# Clone the repository
+git clone https://github.com/Myrad-Labs/MYRAD.git
+cd MYRAD
 
-- **Buy**
-- **Sell**
-- **Burn for access**
+# Install dependencies
+npm install
 
-**Dataset Actions**
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys
 
-#### Burn to Download
-To download any dataset, you must burn a minimum of $0.5 worth of tokens.
-After burning, your download button will automatically unlock.
-You can then click **Your Dataset is ready, download it** to access the dataset.
+# Start development server
+npm run dev
+```
 
-**Ready For Download**
+### Environment Variables
 
-Once unlocked, the content will stay available for you anytime.
+```env
+VITE_PRIVY_APP_ID=your_privy_app_id
+VITE_RECLAIM_APP_ID=your_reclaim_app_id
+VITE_RECLAIM_APP_SECRET=your_reclaim_secret
+```
 
-#### 4. Upload Your Own Datasets
-You can also upload your own dataset and test how everything works
+---
 
-**Dataset Actions**
+## Project Structure
 
-You should upload only datasets that provide real value nothing random like single images or files that have no real world use, Aim for data that is clean, meaningful, and genuinely helpful for AI developers or researchers.
+```
+MYRAD/
+├── src/
+│   ├── pages/           # React page components
+│   ├── providers/       # Context providers (Privy, etc.)
+│   └── main.tsx         # App entry point
+├── backend/
+│   └── ...              # Express.js API server
+└── public/              # Static assets
+```
 
-### Need help?
-- Join our [Telegram community](https://t.me/myradhq)
-- Follow us on [X](https://x.com/myradhq) for updates
-- We always appreciate feedback!
+---
+
+## Supported Data Sources
+
+| Platform | Data Type | Status |
+|----------|-----------|--------|
+| Zomato | Order History | ✅ Live |
+| Swiggy | Order History | ✅ Live |
+| More coming soon... | - | 🚧 |
+
+---
+
+## Security & Privacy
+
+MYRAD is built with privacy as a core principle:
+
+- **Zero-Knowledge Proofs** ensure data verification without exposure
+- **No PII Storage** — we never see or store personal information
+- **User Consent** — users explicitly opt-in to share anonymized data
+- **Data Deletion** — users can delete all contributions anytime
+- **Encryption** — all data in transit is encrypted
+
+---
+
+## Community
+
+- 💬 [Telegram](https://t.me/myradhq)
+- 🐦 [X (Twitter)](https://x.com/myradhq)
+- 📧 Contact: hello@myradhq.xyz
+
+---
+
+## License
+
+Copyright © 2024 MYRAD Labs. All rights reserved.
+
+---
+
+<p align="center">
+  <strong>MYRAD</strong> — Privacy-First Data Union
+</p>
