@@ -2,9 +2,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Lock, Database, CheckCircle, BarChart3, Zap } from 'lucide-react';
 
 const BuyerPage = () => {
-    const accent = '#E5B94E';
-    const emerald = '#10B981';
-
     const features = [
         {
             icon: Shield,
@@ -39,7 +36,7 @@ const BuyerPage = () => {
 
     return (
         <div style={{
-            background: 'linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%)',
+            background: '#000',
             minHeight: '100vh',
             color: '#fff',
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
@@ -49,45 +46,44 @@ const BuyerPage = () => {
             <style>{`
                 * { font-family: 'Inter', -apple-system, sans-serif; }
                 h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+                
                 .card {
                     background: rgba(255,255,255,0.02);
-                    border: 1px solid rgba(255,255,255,0.08);
-                    transition: all 0.3s ease;
+                    border: 1px solid rgba(255,255,255,0.06);
+                    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 }
                 .card:hover {
                     background: rgba(255,255,255,0.04);
-                    border-color: rgba(16, 185, 129, 0.3);
-                    transform: translateY(-4px);
+                    border-color: rgba(255,255,255,0.12);
+                    transform: translateY(-6px);
                 }
+                
                 .btn-primary {
-                    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+                    background: #fff;
                     border: none;
-                    color: #fff;
+                    color: #000;
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.3s ease;
-                    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
                 }
                 .btn-primary:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+                    box-shadow: 0 12px 30px rgba(255, 255, 255, 0.15);
                 }
-                .glow-orb {
-                    position: absolute;
-                    border-radius: 50%;
-                    filter: blur(100px);
-                    pointer-events: none;
+                
+                .nav-link {
+                    color: rgba(255,255,255,0.5);
+                    text-decoration: none;
+                    font-size: 14px;
+                    transition: color 0.2s;
                 }
+                .nav-link:hover { color: #fff; }
             `}</style>
-
-            {/* Background Effects */}
-            <div className="glow-orb" style={{ top: '10%', right: '10%', width: '400px', height: '400px', background: 'rgba(16, 185, 129, 0.08)' }} />
-            <div className="glow-orb" style={{ bottom: '20%', left: '5%', width: '500px', height: '500px', background: 'rgba(16, 185, 129, 0.05)' }} />
 
             {/* Header */}
             <header style={{
-                borderBottom: '1px solid rgba(255,255,255,0.08)',
-                background: 'rgba(0,0,0,0.8)',
+                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                background: 'rgba(0,0,0,0.9)',
                 backdropFilter: 'blur(20px)',
                 position: 'sticky',
                 top: 0,
@@ -96,23 +92,23 @@ const BuyerPage = () => {
                 <div style={{
                     maxWidth: '1280px',
                     margin: '0 auto',
-                    padding: '16px 24px',
+                    padding: '20px 24px',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center'
                 }}>
                     <Link to="/" style={{ textDecoration: 'none' }}>
                         <span style={{
-                            fontSize: '28px',
+                            fontSize: '24px',
                             fontWeight: 800,
-                            color: accent,
+                            color: '#fff',
                             fontFamily: "'Space Grotesk', sans-serif"
                         }}>MYRAD</span>
                     </Link>
                     <nav style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                        <Link to="/" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '14px' }}>For Users</Link>
-                        <Link to="/buyers" style={{ color: emerald, textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>For Buyers</Link>
-                        <Link to="/contact" className="btn-primary" style={{ padding: '10px 20px', borderRadius: '8px', textDecoration: 'none', fontSize: '14px' }}>
+                        <Link to="/" className="nav-link">For Users</Link>
+                        <Link to="/buyers" style={{ color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>For Buyers</Link>
+                        <Link to="/contact" className="btn-primary" style={{ padding: '12px 24px', borderRadius: '10px', textDecoration: 'none', fontSize: '14px' }}>
                             Get Access
                         </Link>
                     </nav>
@@ -121,23 +117,24 @@ const BuyerPage = () => {
 
             {/* Hero Section */}
             <section style={{
-                padding: '120px 24px 80px',
+                padding: '140px 24px 100px',
                 textAlign: 'center',
-                position: 'relative'
+                position: 'relative',
+                borderBottom: '1px solid rgba(255,255,255,0.05)'
             }}>
-                <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                     {/* Badge */}
                     <div style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '8px',
                         padding: '8px 16px',
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '100px',
                         fontSize: '13px',
                         fontWeight: 500,
-                        color: emerald,
+                        color: 'rgba(255, 255, 255, 0.7)',
                         marginBottom: '32px'
                     }}>
                         <Database size={14} />
@@ -146,26 +143,25 @@ const BuyerPage = () => {
 
                     {/* Headline */}
                     <h1 style={{
-                        fontSize: 'clamp(36px, 6vw, 60px)',
-                        fontWeight: 800,
+                        fontSize: 'clamp(40px, 6vw, 60px)',
+                        fontWeight: 700,
                         lineHeight: 1.1,
                         marginBottom: '24px',
-                        letterSpacing: '-0.03em'
+                        letterSpacing: '-0.03em',
+                        color: '#fff'
                     }}>
-                        The Future of Behavioral Intelligence is{' '}
-                        <span style={{ color: emerald }}>Compliant.</span>
+                        The Future of Behavioral Intelligence is Compliant.
                     </h1>
 
                     {/* Sub-headline */}
                     <p style={{
-                        fontSize: 'clamp(16px, 2vw, 20px)',
-                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: 'clamp(16px, 2vw, 18px)',
+                        color: 'rgba(255,255,255,0.5)',
                         lineHeight: 1.7,
-                        maxWidth: '750px',
+                        maxWidth: '650px',
                         margin: '0 auto 48px'
                     }}>
-                        Access high-quality, anonymous, and user-consented data for your AI models and audience segmentation.
-                        <span style={{ color: emerald }}> Cookie-proof by design.</span>
+                        Access high-quality, anonymous, and user-consented data for your AI models and audience segmentation. Cookie-proof by design.
                     </p>
 
                     {/* CTA */}
@@ -173,7 +169,7 @@ const BuyerPage = () => {
                         to="/contact"
                         className="btn-primary"
                         style={{
-                            padding: '18px 36px',
+                            padding: '18px 40px',
                             borderRadius: '12px',
                             fontSize: '16px',
                             display: 'inline-flex',
@@ -190,24 +186,21 @@ const BuyerPage = () => {
 
             {/* Value Proposition */}
             <section style={{
-                padding: '80px 24px',
-                background: 'rgba(255,255,255,0.01)',
-                borderTop: '1px solid rgba(255,255,255,0.05)'
+                padding: '100px 24px',
+                borderBottom: '1px solid rgba(255,255,255,0.05)'
             }}>
-                <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-                    <div style={{
-                        background: 'rgba(16, 185, 129, 0.05)',
-                        border: '1px solid rgba(16, 185, 129, 0.15)',
-                        borderRadius: '20px',
-                        padding: '40px',
+                <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                    <div className="card" style={{
+                        borderRadius: '24px',
+                        padding: '48px',
                         textAlign: 'center'
                     }}>
-                        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '16px' }}>
+                        <h2 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '20px', color: '#fff' }}>
                             What We Provide
                         </h2>
-                        <p style={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, maxWidth: '800px', margin: '0 auto' }}>
-                            We provide essential, pre-labeled behavioral traits and cohorts (e.g., <strong style={{ color: emerald }}>Daily Delivery Users</strong> or{' '}
-                            <strong style={{ color: emerald }}>High Spend Eaters</strong>) that traditional data brokers cannot.
+                        <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, fontSize: '16px' }}>
+                            We provide essential, pre-labeled behavioral traits and cohorts (e.g., <strong style={{ color: '#fff' }}>Daily Delivery Users</strong> or{' '}
+                            <strong style={{ color: '#fff' }}>High Spend Eaters</strong>) that traditional data brokers cannot.
                             Our data is 100% compliant, sourced directly from users via zero-knowledge proofs.
                         </p>
                     </div>
@@ -215,39 +208,44 @@ const BuyerPage = () => {
             </section>
 
             {/* Features Grid */}
-            <section style={{ padding: '80px 24px' }}>
+            <section style={{ padding: '100px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                    <h2 style={{
-                        fontSize: '36px',
-                        fontWeight: 700,
-                        textAlign: 'center',
-                        marginBottom: '60px'
-                    }}>
-                        Why <span style={{ color: emerald }}>MYRAD</span> Data?
-                    </h2>
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+                        <p style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            Why Choose Us
+                        </p>
+                        <h2 style={{
+                            fontSize: '40px',
+                            fontWeight: 700,
+                            color: '#fff'
+                        }}>
+                            Why MYRAD Data?
+                        </h2>
+                    </div>
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                        gap: '24px'
+                        gap: '20px'
                     }}>
                         {features.map((feature, i) => (
-                            <div key={i} className="card" style={{ borderRadius: '20px', padding: '32px' }}>
+                            <div key={i} className="card" style={{ borderRadius: '20px', padding: '36px' }}>
                                 <div style={{
-                                    width: '56px',
-                                    height: '56px',
+                                    width: '52px',
+                                    height: '52px',
                                     borderRadius: '14px',
-                                    background: 'rgba(16, 185, 129, 0.1)',
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    border: '1px solid rgba(255, 255, 255, 0.08)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    marginBottom: '20px'
+                                    marginBottom: '24px'
                                 }}>
-                                    <feature.icon size={28} color={emerald} />
+                                    <feature.icon size={24} color="rgba(255,255,255,0.7)" />
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px' }}>
+                                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px', color: '#fff' }}>
                                     {feature.title}
                                 </h3>
-                                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', lineHeight: 1.7 }}>
+                                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', lineHeight: 1.7 }}>
                                     {feature.description}
                                 </p>
                             </div>
@@ -258,15 +256,17 @@ const BuyerPage = () => {
 
             {/* Use Cases */}
             <section style={{
-                padding: '80px 24px',
-                background: 'rgba(255,255,255,0.01)',
-                borderTop: '1px solid rgba(255,255,255,0.05)'
+                padding: '100px 24px',
+                borderBottom: '1px solid rgba(255,255,255,0.05)'
             }}>
                 <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '32px', fontWeight: 700, marginBottom: '16px' }}>
+                    <p style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        Applications
+                    </p>
+                    <h2 style={{ fontSize: '36px', fontWeight: 700, marginBottom: '16px', color: '#fff' }}>
                         Ideal For
                     </h2>
-                    <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '40px' }}>
+                    <p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '48px' }}>
                         Power your data-driven initiatives with compliant behavioral intelligence
                     </p>
                     <div style={{
@@ -278,12 +278,12 @@ const BuyerPage = () => {
                         {useCases.map((useCase, i) => (
                             <div key={i} style={{
                                 padding: '12px 24px',
-                                background: 'rgba(16, 185, 129, 0.1)',
-                                border: '1px solid rgba(16, 185, 129, 0.2)',
+                                background: 'rgba(255, 255, 255, 0.03)',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
                                 borderRadius: '100px',
                                 fontSize: '14px',
                                 fontWeight: 500,
-                                color: 'rgba(255,255,255,0.8)'
+                                color: 'rgba(255,255,255,0.7)'
                             }}>
                                 {useCase}
                             </div>
@@ -293,20 +293,18 @@ const BuyerPage = () => {
             </section>
 
             {/* Coming Soon Notice */}
-            <section style={{ padding: '80px 24px' }}>
-                <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center' }}>
-                    <div style={{
-                        background: 'rgba(229, 185, 78, 0.08)',
-                        border: '1px solid rgba(229, 185, 78, 0.2)',
-                        borderRadius: '16px',
-                        padding: '32px'
+            <section style={{ padding: '100px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+                    <div className="card" style={{
+                        borderRadius: '20px',
+                        padding: '40px'
                     }}>
-                        <Zap size={32} color={accent} style={{ marginBottom: '16px' }} />
-                        <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px', color: accent }}>
+                        <Zap size={32} color="rgba(255,255,255,0.6)" style={{ marginBottom: '16px' }} />
+                        <h3 style={{ fontSize: '22px', fontWeight: 600, marginBottom: '12px', color: '#fff' }}>
                             Coming Soon
                         </h3>
-                        <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>
-                            The full <strong>Insight Marketplace</strong> and <strong>Trait API</strong> access are coming soon.
+                        <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+                            The full <strong style={{ color: '#fff' }}>Insight Marketplace</strong> and <strong style={{ color: '#fff' }}>Trait API</strong> access are coming soon.
                             For immediate access and pilot programs, please contact our team.
                         </p>
                     </div>
@@ -315,16 +313,14 @@ const BuyerPage = () => {
 
             {/* CTA Section */}
             <section style={{
-                padding: '100px 24px',
-                background: `linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, transparent 100%)`,
-                borderTop: '1px solid rgba(255,255,255,0.05)',
+                padding: '140px 24px',
                 textAlign: 'center'
             }}>
                 <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-                    <h2 style={{ fontSize: '40px', fontWeight: 700, marginBottom: '16px' }}>
+                    <h2 style={{ fontSize: '44px', fontWeight: 700, marginBottom: '20px', color: '#fff' }}>
                         Ready to Get Started?
                     </h2>
-                    <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '40px', fontSize: '18px' }}>
+                    <p style={{ color: 'rgba(255,255,255,0.45)', marginBottom: '40px', fontSize: '17px', lineHeight: 1.7 }}>
                         Contact us to learn more about accessing compliant behavioral data for your organization.
                     </p>
                     <Link
@@ -333,7 +329,7 @@ const BuyerPage = () => {
                         style={{
                             padding: '20px 48px',
                             borderRadius: '14px',
-                            fontSize: '18px',
+                            fontSize: '17px',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '12px',
@@ -349,8 +345,7 @@ const BuyerPage = () => {
             {/* Footer */}
             <footer style={{
                 padding: '48px 24px',
-                borderTop: '1px solid rgba(255,255,255,0.08)',
-                background: 'rgba(0,0,0,0.5)'
+                borderTop: '1px solid rgba(255,255,255,0.05)'
             }}>
                 <div style={{
                     maxWidth: '1200px',
@@ -361,11 +356,11 @@ const BuyerPage = () => {
                     flexWrap: 'wrap',
                     gap: '24px'
                 }}>
-                    <div style={{ fontSize: '24px', fontWeight: 800, color: accent }}>MYRAD</div>
-                    <nav style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-                        <Link to="/" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: '14px' }}>For Users</Link>
-                        <Link to="/privacy" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: '14px' }}>Privacy Policy</Link>
-                        <Link to="/terms" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: '14px' }}>Terms of Service</Link>
+                    <div style={{ fontSize: '22px', fontWeight: 800, color: '#fff', fontFamily: "'Space Grotesk', sans-serif" }}>MYRAD</div>
+                    <nav style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
+                        <Link to="/" className="nav-link">For Users</Link>
+                        <Link to="/privacy" className="nav-link">Privacy</Link>
+                        <Link to="/terms" className="nav-link">Terms</Link>
                     </nav>
                 </div>
                 <div style={{
@@ -374,10 +369,10 @@ const BuyerPage = () => {
                     paddingTop: '24px',
                     borderTop: '1px solid rgba(255,255,255,0.05)',
                     textAlign: 'center',
-                    color: 'rgba(255,255,255,0.3)',
+                    color: 'rgba(255,255,255,0.25)',
                     fontSize: '13px'
                 }}>
-                    © 2024 MYRAD. Privacy-first data union.
+                    © 2024 MYRAD Labs. All rights reserved.
                 </div>
             </footer>
         </div>
