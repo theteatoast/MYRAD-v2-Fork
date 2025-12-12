@@ -16,8 +16,18 @@ if (!fs.existsSync(DATA_DIR)) {
 // File paths
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const POINTS_FILE = path.join(DATA_DIR, 'points.json');
-const CONTRIBUTIONS_FILE = path.join(DATA_DIR, 'contributions.json');
+const CONTRIBUTIONS_FILE = path.join(DATA_DIR, 'contributions.json'); // Legacy - for backwards compat
 const API_KEYS_FILE = path.join(DATA_DIR, 'api_keys.json');
+
+// Provider-specific contribution paths
+const ZOMATO_CONTRIBUTIONS_FILE = path.join(DATA_DIR, 'zomato', 'contributions.json');
+const GITHUB_CONTRIBUTIONS_FILE = path.join(DATA_DIR, 'github', 'contributions.json');
+
+// Ensure provider directories exist
+const ZOMATO_DIR = path.join(DATA_DIR, 'zomato');
+const GITHUB_DIR = path.join(DATA_DIR, 'github');
+if (!fs.existsSync(ZOMATO_DIR)) fs.mkdirSync(ZOMATO_DIR, { recursive: true });
+if (!fs.existsSync(GITHUB_DIR)) fs.mkdirSync(GITHUB_DIR, { recursive: true });
 
 // Initialize files if they don't exist
 const initFile = (filePath, defaultData = []) => {
@@ -28,8 +38,10 @@ const initFile = (filePath, defaultData = []) => {
 
 initFile(USERS_FILE, []);
 initFile(POINTS_FILE, []);
-initFile(CONTRIBUTIONS_FILE, []);
+initFile(CONTRIBUTIONS_FILE, []); // Legacy
 initFile(API_KEYS_FILE, []);
+initFile(ZOMATO_CONTRIBUTIONS_FILE, []);
+initFile(GITHUB_CONTRIBUTIONS_FILE, []);
 
 // Read JSON file
 const readJSON = (filePath) => {
@@ -213,9 +225,32 @@ export const getWeeklyLeaderboard = (limit = 10) => {
         .filter(u => u !== null);
 };
 
-// Contributions
-export const getContributions = () => readJSON(CONTRIBUTIONS_FILE);
-export const saveContributions = (contributions) => writeJSON(CONTRIBUTIONS_FILE, contributions);
+// Helper to get contribution file based on dataType
+const getContributionFile = (dataType) => {
+    if (dataType === 'zomato_order_history') return ZOMATO_CONTRIBUTIONS_FILE;
+    if (dataType === 'github_profile') return GITHUB_CONTRIBUTIONS_FILE;
+    return CONTRIBUTIONS_FILE; // Fallback to legacy
+};
+
+// Contributions - now provider-specific
+export const getContributions = (dataType = null) => {
+    if (dataType) {
+        return readJSON(getContributionFile(dataType));
+    }
+    // Return all contributions from all providers
+    const zomato = readJSON(ZOMATO_CONTRIBUTIONS_FILE);
+    const github = readJSON(GITHUB_CONTRIBUTIONS_FILE);
+    const legacy = readJSON(CONTRIBUTIONS_FILE);
+    return [...zomato, ...github, ...legacy];
+};
+
+export const saveContributions = (contributions, dataType = null) => {
+    if (dataType) {
+        return writeJSON(getContributionFile(dataType), contributions);
+    }
+    // Legacy fallback
+    return writeJSON(CONTRIBUTIONS_FILE, contributions);
+};
 
 export const getUserContributions = (userId) => {
     const contributions = getContributions();
@@ -249,21 +284,22 @@ export const getCohortSizes = () => {
 };
 
 export const addContribution = (userId, data) => {
-    const contributions = getContributions();
+    const dataType = data.dataType || 'general';
+    const contributions = getContributions(dataType);
     const newContribution = {
         id: Date.now().toString(),
         userId,
         data: data.anonymizedData,
         sellableData: data.sellableData || null,  // Enterprise-ready format
         behavioralInsights: data.behavioralInsights || null,
-        dataType: data.dataType || 'general',
+        dataType,
         reclaimProofId: data.reclaimProofId || null,
         processingMethod: data.processingMethod || 'raw',
         status: 'verified',
         createdAt: new Date().toISOString()
     };
     contributions.push(newContribution);
-    saveContributions(contributions);
+    saveContributions(contributions, dataType);
 
     // Award points for contribution
     addPoints(userId, 500, 'data_contribution');

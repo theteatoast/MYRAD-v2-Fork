@@ -257,7 +257,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
         // Process Zomato data through enterprise pipeline
         if (dataType === 'zomato_order_history') {
             try {
-                const { transformToSellableData } = await import('./llmPipeline.js');
+                const { transformToSellableData } = await import('./zomatoPipeline.js');
 
                 console.log('📦 Processing zomato data through enterprise pipeline...');
                 // DEBUG: Print raw data
@@ -277,6 +277,28 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
             }
         }
 
+        // Process GitHub data through developer profile pipeline
+        if (dataType === 'github_profile') {
+            try {
+                const { processGithubData } = await import('./githubPipeline.js');
+
+                console.log('📦 Processing GitHub data through developer pipeline...');
+                console.log('RAW GITHUB DATA:', JSON.stringify(anonymizedData, null, 2));
+
+                const result = processGithubData(anonymizedData);
+
+                if (result.success) {
+                    sellableData = result.sellableData;
+                    processedData = result.data;
+                    console.log('✅ GitHub developer pipeline complete');
+                    console.log(`📊 Developer tier: ${sellableData?.developer_profile?.tier || 'unknown'}`);
+                }
+            } catch (pipelineError) {
+                console.error('⚠️ GitHub pipeline error:', pipelineError.message);
+                console.error('⚠️ Pipeline stack:', pipelineError.stack);
+            }
+        }
+
         // Store contribution with sellable data format
         const contribution = jsonStorage.addContribution(user.id, {
             anonymizedData: processedData,
@@ -292,9 +314,10 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
         // ========================================
         const dataQualityScore = sellableData?.metadata?.data_quality?.score || 0;
         const orderCount = sellableData?.transaction_data?.summary?.total_orders || 0;
+        const githubContributions = sellableData?.activity_metrics?.yearly_contributions || 0;
 
-        // BLOCK CONTRIBUTION IF ZERO ORDERS
-        if (orderCount === 0) {
+        // BLOCK CONTRIBUTION IF NO DATA (dataType-specific validation)
+        if (dataType === 'zomato_order_history' && orderCount === 0) {
             console.log(`⚠️ Zero orders detected for user ${user.id}. No points awarded.`);
             return res.status(400).json({
                 success: false,
@@ -309,10 +332,24 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
             });
         }
 
-        const rewardResult = rewardService.calculateRewards({
-            dataQualityScore,
-            orderCount
-        });
+        // For GitHub, award flat 500 points for valid profile verification
+        let rewardResult;
+        if (dataType === 'github_profile') {
+            rewardResult = {
+                totalPoints: 500,
+                breakdown: {
+                    base: 500,
+                    quality: 0,
+                    bonus: 0
+                }
+            };
+            console.log(`🐙 GitHub profile verified for user ${user.id}. Awarding 500 points.`);
+        } else {
+            rewardResult = rewardService.calculateRewards({
+                dataQualityScore,
+                orderCount
+            });
+        }
 
         // Award dynamic points
         jsonStorage.addPoints(user.id, rewardResult.totalPoints, 'data_contribution');
@@ -347,7 +384,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
 
             // Update the contribution's sellable data with k-anonymity status
             if (sellableData?.metadata?.privacy_compliance) {
-                const contributions = jsonStorage.getContributions();
+                const contributions = jsonStorage.getContributions(dataType);
                 const idx = contributions.findIndex(c => c.id === contribution.id);
                 if (idx !== -1) {
                     contributions[idx].sellableData.metadata.privacy_compliance.k_anonymity_compliant = kAnonymityCompliant;
@@ -357,7 +394,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
                     } else {
                         contributions[idx].sellableData.metadata.privacy_compliance.aggregation_status = 'sellable';
                     }
-                    jsonStorage.saveContributions(contributions);
+                    jsonStorage.saveContributions(contributions, dataType);
                 }
             }
         }

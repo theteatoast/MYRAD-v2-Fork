@@ -24,6 +24,16 @@ const PROVIDERS = [
     bgGradient: 'linear-gradient(135deg, #333333 0%, #000000 100%)',
     points: 10, // Updated to match new reward system (base points)
     dataType: 'zomato_order_history'
+  },
+  {
+    id: 'github',
+    name: 'GitHub',
+    description: 'Developer Profile',
+    providerId: import.meta.env.VITE_GITHUB_PROVIDER_ID || '',
+    color: '#ffffff',
+    bgGradient: 'linear-gradient(135deg, #24292e 0%, #0d1117 100%)',
+    points: 15,
+    dataType: 'github_profile'
   }
 ];
 
