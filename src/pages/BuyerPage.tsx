@@ -36,9 +36,9 @@ const BuyerPage = () => {
 
     return (
         <div style={{
-            background: '#000',
+            background: '#fff',
             minHeight: '100vh',
-            color: '#fff',
+            color: '#1a1a1a',
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
         }}>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -48,42 +48,44 @@ const BuyerPage = () => {
                 h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
                 
                 .card {
-                    background: rgba(255,255,255,0.02);
-                    border: 1px solid rgba(255,255,255,0.06);
+                    background: rgba(255,255,255,0.8);
+                    border: 1px solid rgba(0,0,0,0.08);
                     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
                 }
                 .card:hover {
-                    background: rgba(255,255,255,0.04);
-                    border-color: rgba(255,255,255,0.12);
+                    background: rgba(255,255,255,0.95);
+                    border-color: rgba(0,0,0,0.12);
                     transform: translateY(-6px);
+                    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
                 }
                 
                 .btn-primary {
-                    background: #fff;
+                    background: #1a1a1a;
                     border: none;
-                    color: #000;
+                    color: #fff;
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.3s ease;
                 }
                 .btn-primary:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 12px 30px rgba(255, 255, 255, 0.15);
+                    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
                 }
                 
                 .nav-link {
-                    color: rgba(255,255,255,0.5);
+                    color: rgba(0,0,0,0.5);
                     text-decoration: none;
                     font-size: 14px;
                     transition: color 0.2s;
                 }
-                .nav-link:hover { color: #fff; }
+                .nav-link:hover { color: #1a1a1a; }
             `}</style>
 
             {/* Header */}
             <header style={{
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                background: 'rgba(0,0,0,0.9)',
+                borderBottom: '1px solid rgba(0,0,0,0.08)',
+                background: 'rgba(255,255,255,0.9)',
                 backdropFilter: 'blur(20px)',
                 position: 'sticky',
                 top: 0,
@@ -101,13 +103,13 @@ const BuyerPage = () => {
                         <span style={{
                             fontSize: '24px',
                             fontWeight: 800,
-                            color: '#fff',
+                            color: '#1a1a1a',
                             fontFamily: "'Space Grotesk', sans-serif"
                         }}>MYRAD</span>
                     </Link>
                     <nav style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                         <Link to="/" className="nav-link">For Users</Link>
-                        <Link to="/buyers" style={{ color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>For Buyers</Link>
+                        <Link to="/buyers" style={{ color: '#1a1a1a', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>For Buyers</Link>
                         <Link to="/contact" className="btn-primary" style={{ padding: '12px 24px', borderRadius: '10px', textDecoration: 'none', fontSize: '14px' }}>
                             Get Access
                         </Link>
@@ -120,7 +122,7 @@ const BuyerPage = () => {
                 padding: '140px 24px 100px',
                 textAlign: 'center',
                 position: 'relative',
-                borderBottom: '1px solid rgba(255,255,255,0.05)'
+                borderBottom: '1px solid rgba(0,0,0,0.06)'
             }}>
                 <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                     {/* Badge */}
@@ -129,12 +131,12 @@ const BuyerPage = () => {
                         alignItems: 'center',
                         gap: '8px',
                         padding: '8px 16px',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: 'rgba(79, 70, 229, 0.08)',
+                        border: '1px solid rgba(79, 70, 229, 0.15)',
                         borderRadius: '100px',
                         fontSize: '13px',
                         fontWeight: 500,
-                        color: 'rgba(255, 255, 255, 0.7)',
+                        color: '#4F46E5',
                         marginBottom: '32px'
                     }}>
                         <Database size={14} />
@@ -148,7 +150,7 @@ const BuyerPage = () => {
                         lineHeight: 1.1,
                         marginBottom: '24px',
                         letterSpacing: '-0.03em',
-                        color: '#fff'
+                        color: '#1a1a1a'
                     }}>
                         The Future of Behavioral Intelligence is Compliant.
                     </h1>
@@ -156,7 +158,7 @@ const BuyerPage = () => {
                     {/* Sub-headline */}
                     <p style={{
                         fontSize: 'clamp(16px, 2vw, 18px)',
-                        color: 'rgba(255,255,255,0.5)',
+                        color: 'rgba(0,0,0,0.5)',
                         lineHeight: 1.7,
                         maxWidth: '650px',
                         margin: '0 auto 48px'
@@ -187,7 +189,7 @@ const BuyerPage = () => {
             {/* Value Proposition */}
             <section style={{
                 padding: '100px 24px',
-                borderBottom: '1px solid rgba(255,255,255,0.05)'
+                borderBottom: '1px solid rgba(0,0,0,0.06)'
             }}>
                 <div style={{ maxWidth: '900px', margin: '0 auto' }}>
                     <div className="card" style={{
@@ -195,12 +197,12 @@ const BuyerPage = () => {
                         padding: '48px',
                         textAlign: 'center'
                     }}>
-                        <h2 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '20px', color: '#fff' }}>
+                        <h2 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '20px', color: '#1a1a1a' }}>
                             What We Provide
                         </h2>
-                        <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, fontSize: '16px' }}>
-                            We provide essential, pre-labeled behavioral traits and cohorts (e.g., <strong style={{ color: '#fff' }}>Daily Delivery Users</strong> or{' '}
-                            <strong style={{ color: '#fff' }}>High Spend Eaters</strong>) that traditional data brokers cannot.
+                        <p style={{ color: 'rgba(0,0,0,0.5)', lineHeight: 1.8, fontSize: '16px' }}>
+                            We provide essential, pre-labeled behavioral traits and cohorts (e.g., <strong style={{ color: '#1a1a1a' }}>Daily Delivery Users</strong> or{' '}
+                            <strong style={{ color: '#1a1a1a' }}>High Spend Eaters</strong>) that traditional data brokers cannot.
                             Our data is 100% compliant, sourced directly from users via zero-knowledge proofs.
                         </p>
                     </div>
@@ -208,16 +210,16 @@ const BuyerPage = () => {
             </section>
 
             {/* Features Grid */}
-            <section style={{ padding: '100px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+            <section style={{ padding: '100px 24px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                     <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-                        <p style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        <p style={{ fontSize: '13px', fontWeight: 600, color: '#4F46E5', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                             Why Choose Us
                         </p>
                         <h2 style={{
                             fontSize: '40px',
                             fontWeight: 700,
-                            color: '#fff'
+                            color: '#1a1a1a'
                         }}>
                             Why MYRAD Data?
                         </h2>
@@ -233,19 +235,19 @@ const BuyerPage = () => {
                                     width: '52px',
                                     height: '52px',
                                     borderRadius: '14px',
-                                    background: 'rgba(255, 255, 255, 0.05)',
-                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                    background: 'rgba(79, 70, 229, 0.08)',
+                                    border: '1px solid rgba(79, 70, 229, 0.15)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     marginBottom: '24px'
                                 }}>
-                                    <feature.icon size={24} color="rgba(255,255,255,0.7)" />
+                                    <feature.icon size={24} color="#4F46E5" />
                                 </div>
-                                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px', color: '#fff' }}>
+                                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px', color: '#1a1a1a' }}>
                                     {feature.title}
                                 </h3>
-                                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', lineHeight: 1.7 }}>
+                                <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '14px', lineHeight: 1.7 }}>
                                     {feature.description}
                                 </p>
                             </div>
@@ -257,16 +259,16 @@ const BuyerPage = () => {
             {/* Use Cases */}
             <section style={{
                 padding: '100px 24px',
-                borderBottom: '1px solid rgba(255,255,255,0.05)'
+                borderBottom: '1px solid rgba(0,0,0,0.06)'
             }}>
                 <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-                    <p style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    <p style={{ fontSize: '13px', fontWeight: 600, color: '#4F46E5', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         Applications
                     </p>
-                    <h2 style={{ fontSize: '36px', fontWeight: 700, marginBottom: '16px', color: '#fff' }}>
+                    <h2 style={{ fontSize: '36px', fontWeight: 700, marginBottom: '16px', color: '#1a1a1a' }}>
                         Ideal For
                     </h2>
-                    <p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '48px' }}>
+                    <p style={{ color: 'rgba(0,0,0,0.5)', marginBottom: '48px' }}>
                         Power your data-driven initiatives with compliant behavioral intelligence
                     </p>
                     <div style={{
@@ -278,12 +280,12 @@ const BuyerPage = () => {
                         {useCases.map((useCase, i) => (
                             <div key={i} style={{
                                 padding: '12px 24px',
-                                background: 'rgba(255, 255, 255, 0.03)',
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                background: 'rgba(79, 70, 229, 0.08)',
+                                border: '1px solid rgba(79, 70, 229, 0.15)',
                                 borderRadius: '100px',
                                 fontSize: '14px',
                                 fontWeight: 500,
-                                color: 'rgba(255,255,255,0.7)'
+                                color: '#4F46E5'
                             }}>
                                 {useCase}
                             </div>
@@ -293,18 +295,18 @@ const BuyerPage = () => {
             </section>
 
             {/* Coming Soon Notice */}
-            <section style={{ padding: '100px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+            <section style={{ padding: '100px 24px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                 <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
                     <div className="card" style={{
                         borderRadius: '20px',
                         padding: '40px'
                     }}>
-                        <Zap size={32} color="rgba(255,255,255,0.6)" style={{ marginBottom: '16px' }} />
-                        <h3 style={{ fontSize: '22px', fontWeight: 600, marginBottom: '12px', color: '#fff' }}>
+                        <Zap size={32} color="#4F46E5" style={{ marginBottom: '16px' }} />
+                        <h3 style={{ fontSize: '22px', fontWeight: 600, marginBottom: '12px', color: '#1a1a1a' }}>
                             Coming Soon
                         </h3>
-                        <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
-                            The full <strong style={{ color: '#fff' }}>Insight Marketplace</strong> and <strong style={{ color: '#fff' }}>Trait API</strong> access are coming soon.
+                        <p style={{ color: 'rgba(0,0,0,0.5)', lineHeight: 1.7 }}>
+                            The full <strong style={{ color: '#1a1a1a' }}>Insight Marketplace</strong> and <strong style={{ color: '#1a1a1a' }}>Trait API</strong> access are coming soon.
                             For immediate access and pilot programs, please contact our team.
                         </p>
                     </div>
@@ -317,10 +319,10 @@ const BuyerPage = () => {
                 textAlign: 'center'
             }}>
                 <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-                    <h2 style={{ fontSize: '44px', fontWeight: 700, marginBottom: '20px', color: '#fff' }}>
+                    <h2 style={{ fontSize: '44px', fontWeight: 700, marginBottom: '20px', color: '#1a1a1a' }}>
                         Ready to Get Started?
                     </h2>
-                    <p style={{ color: 'rgba(255,255,255,0.45)', marginBottom: '40px', fontSize: '17px', lineHeight: 1.7 }}>
+                    <p style={{ color: 'rgba(0,0,0,0.5)', marginBottom: '40px', fontSize: '17px', lineHeight: 1.7 }}>
                         Contact us to learn more about accessing compliant behavioral data for your organization.
                     </p>
                     <Link
@@ -345,7 +347,7 @@ const BuyerPage = () => {
             {/* Footer */}
             <footer style={{
                 padding: '48px 24px',
-                borderTop: '1px solid rgba(255,255,255,0.05)'
+                borderTop: '1px solid rgba(0,0,0,0.08)'
             }}>
                 <div style={{
                     maxWidth: '1200px',
@@ -356,7 +358,7 @@ const BuyerPage = () => {
                     flexWrap: 'wrap',
                     gap: '24px'
                 }}>
-                    <div style={{ fontSize: '22px', fontWeight: 800, color: '#fff', fontFamily: "'Space Grotesk', sans-serif" }}>MYRAD</div>
+                    <div style={{ fontSize: '22px', fontWeight: 800, color: '#1a1a1a', fontFamily: "'Space Grotesk', sans-serif" }}>MYRAD</div>
                     <nav style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
                         <Link to="/" className="nav-link">For Users</Link>
                         <Link to="/privacy" className="nav-link">Privacy</Link>
@@ -367,9 +369,9 @@ const BuyerPage = () => {
                     maxWidth: '1200px',
                     margin: '24px auto 0',
                     paddingTop: '24px',
-                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                    borderTop: '1px solid rgba(0,0,0,0.08)',
                     textAlign: 'center',
-                    color: 'rgba(255,255,255,0.25)',
+                    color: 'rgba(0,0,0,0.4)',
                     fontSize: '13px'
                 }}>
                     © 2024 MYRAD Labs. All rights reserved.
