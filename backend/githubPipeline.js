@@ -68,6 +68,7 @@ export function processGithubData(extractedData, options = {}) {
 
         // Social metrics
         social_metrics: {
+            follower_count: followers, // Store actual count for database indexing
             follower_tier: getFollowerTier(followers),
             follower_count_range: getFollowerRange(followers),
             is_influencer: followers >= 1000

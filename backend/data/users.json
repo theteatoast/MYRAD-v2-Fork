@@ -11,5 +11,18 @@
     "league": "Gold",
     "createdAt": "2025-12-12T18:28:15.479Z",
     "lastActiveAt": "2025-12-12T18:30:10.810Z"
+  },
+  {
+    "id": "1765916804038",
+    "privyId": "did:privy:cmj919qf802jdjm0cxsj1j03o",
+    "email": "user",
+    "walletAddress": "0xBEBE78cD869b3801237273a20e59eF4Ed99250eE",
+    "username": null,
+    "streak": 0,
+    "lastContributionDate": "2025-12-17T12:37:25.328Z",
+    "totalPoints": 1630,
+    "league": "Gold",
+    "createdAt": "2025-12-16T20:26:44.038Z",
+    "lastActiveAt": "2025-12-17T13:08:02.294Z"
   }
 ]

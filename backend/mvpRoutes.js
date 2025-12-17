@@ -1,5 +1,6 @@
 // MVP API Routes for MYRAD
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import * as jsonStorage from './jsonStorage.js';
 import * as cohortService from './cohortService.js';
 import * as consentLedger from './consentLedger.js';
@@ -7,6 +8,23 @@ import * as rewardService from './rewardService.js';
 
 
 const router = express.Router();
+
+// Rate limiting for enterprise/export endpoints (prevent abuse)
+const enterpriseRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each API key to 100 requests per windowMs
+  message: 'Too many requests from this API key, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    // Rate limit by API key instead of IP
+    return req.headers['x-api-key'] || req.ip;
+  },
+  skip: (req) => {
+    // Skip rate limiting if no API key (will fail auth anyway)
+    return !req.headers['x-api-key'];
+  }
+});
 
 // Middleware to verify Privy token (stub for now)
 const verifyPrivyToken = (req, res, next) => {
@@ -41,13 +59,24 @@ const verifyApiKey = (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
 
     if (!apiKey) {
-        return res.status(401).json({ error: 'API key required' });
+        return res.status(401).json({ 
+            error: 'API key required',
+            message: 'Please provide your API key in the X-API-Key header'
+        });
     }
 
     const isValid = jsonStorage.validateApiKey(apiKey);
     if (!isValid) {
-        return res.status(401).json({ error: 'Invalid or inactive API key' });
+        // Log failed attempts (for security monitoring)
+        console.warn(`⚠️  Failed API key attempt from IP: ${req.ip}`);
+        return res.status(401).json({ 
+            error: 'Invalid or inactive API key',
+            message: 'The provided API key is invalid, expired, or inactive'
+        });
     }
+
+    // Log successful API usage (for audit trail)
+    console.log(`✅ API key validated for endpoint: ${req.path}`);
 
     next();
 };
@@ -109,12 +138,12 @@ router.post('/auth/verify', verifyPrivyToken, (req, res) => {
 });
 
 // Get user profile
-router.get('/user/profile', verifyPrivyToken, (req, res) => {
+router.get('/user/profile', verifyPrivyToken, async (req, res) => {
     try {
         const user = jsonStorage.getUserByPrivyId(req.user.privyId);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const contributions = jsonStorage.getUserContributions(user.id);
+        const contributions = await jsonStorage.getUserContributions(user.id);
 
         res.json({
             success: true,
@@ -164,7 +193,7 @@ router.get('/user/points', verifyPrivyToken, (req, res) => {
 });
 
 // Get user contributions
-router.get('/user/contributions', verifyPrivyToken, (req, res) => {
+router.get('/user/contributions', verifyPrivyToken, async (req, res) => {
     try {
         const user = jsonStorage.getUserByPrivyId(req.user.privyId);
 
@@ -172,13 +201,15 @@ router.get('/user/contributions', verifyPrivyToken, (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const contributions = jsonStorage.getUserContributions(user.id);
+        const contributions = await jsonStorage.getUserContributions(user.id);
 
         res.json({
             success: true,
-            contributions: contributions.sort((a, b) =>
-                new Date(b.createdAt) - new Date(a.createdAt)
-            )
+            contributions: contributions.sort((a, b) => {
+                const dateA = new Date(a.createdAt || a.created_at || 0);
+                const dateB = new Date(b.createdAt || b.created_at || 0);
+                return dateB.getTime() - dateA.getTime();
+            })
         });
     } catch (error) {
         console.error('Get contributions error:', error);
@@ -211,10 +242,10 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
         // ========================================
         // DUPLICATE SUBMISSION PREVENTION
         // ========================================
-        // Check if this exact proof has already been submitted
+        // Check if this exact proof has already been submitted (using database)
         if (reclaimProofId) {
-            const existingContributions = jsonStorage.getContributionsByUserId(user.id);
-            const duplicateProof = existingContributions.find(c => c.reclaimProofId === reclaimProofId);
+            const { findContributionByProofId } = await import('./database/contributionService.js');
+            const duplicateProof = await findContributionByProofId(reclaimProofId);
 
             if (duplicateProof) {
                 console.log(`⚠️ Duplicate submission blocked: proofId ${reclaimProofId} already exists`);
@@ -227,9 +258,13 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
         }
 
         // Check for similar data submission within 24 hours (content-based dedup)
-        const recentContributions = jsonStorage.getContributionsByUserId(user.id)
+        const existingContributions = await jsonStorage.getContributionsByUserId(user.id);
+        const recentContributions = existingContributions
             .filter(c => c.dataType === dataType)
-            .filter(c => new Date() - new Date(c.createdAt) < 24 * 60 * 60 * 1000); // Last 24 hours
+            .filter(c => {
+                const createdAt = c.createdAt || c.created_at;
+                return new Date() - new Date(createdAt) < 24 * 60 * 60 * 1000; // Last 24 hours
+            });
 
         if (recentContributions.length > 0) {
             // Calculate a simple hash of the order count to detect similar data
@@ -300,7 +335,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
         }
 
         // Store contribution with sellable data format
-        const contribution = jsonStorage.addContribution(user.id, {
+        const contribution = await jsonStorage.addContribution(user.id, {
             anonymizedData: processedData,
             sellableData,
             behavioralInsights,
@@ -369,7 +404,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
         let cohortSize = 0;
 
         if (cohortId) {
-            cohortSize = jsonStorage.getCohortSize(cohortId);
+            cohortSize = await jsonStorage.getCohortSize(cohortId);
             const MIN_K = 10; // k-anonymity threshold
             kAnonymityCompliant = cohortSize >= MIN_K;
 
@@ -382,19 +417,35 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
             cohortSize = cohortData.count;
             kAnonymityCompliant = cohortData.k_anonymity_compliant;
 
-            // Update the contribution's sellable data with k-anonymity status
-            if (sellableData?.metadata?.privacy_compliance) {
-                const contributions = jsonStorage.getContributions(dataType);
-                const idx = contributions.findIndex(c => c.id === contribution.id);
-                if (idx !== -1) {
-                    contributions[idx].sellableData.metadata.privacy_compliance.k_anonymity_compliant = kAnonymityCompliant;
-                    contributions[idx].sellableData.metadata.privacy_compliance.cohort_size = cohortSize;
-                    if (!kAnonymityCompliant) {
-                        contributions[idx].sellableData.metadata.privacy_compliance.aggregation_status = 'pending_more_contributors';
-                    } else {
-                        contributions[idx].sellableData.metadata.privacy_compliance.aggregation_status = 'sellable';
-                    }
-                    jsonStorage.saveContributions(contributions, dataType);
+            // Update the contribution's sellable data with k-anonymity status in database
+            // Note: The database already has these fields indexed, so we update them directly
+            if (sellableData?.metadata?.privacy_compliance && kAnonymityCompliant !== undefined) {
+                try {
+                    const { query } = await import('./database/db.js');
+                    const tableName = dataType === 'zomato_order_history' ? 'zomato_contributions' : 'github_contributions';
+                    const aggregationStatus = kAnonymityCompliant ? 'sellable' : 'pending_more_contributors';
+                    
+                    await query(
+                        `UPDATE ${tableName} 
+                         SET sellable_data = jsonb_set(
+                             jsonb_set(
+                                 jsonb_set(sellable_data::jsonb, 
+                                     '{metadata,privacy_compliance,k_anonymity_compliant}', $1::jsonb),
+                                 '{metadata,privacy_compliance,cohort_size}', $2::jsonb
+                             ),
+                             '{metadata,privacy_compliance,aggregation_status}', $4::jsonb
+                         )
+                         WHERE id = $3`,
+                        [
+                            JSON.stringify(kAnonymityCompliant),
+                            JSON.stringify(cohortSize),
+                            contribution.id,
+                            JSON.stringify(aggregationStatus)
+                        ]
+                    );
+                    console.log(`✅ Updated k-anonymity status for contribution ${contribution.id}: compliant=${kAnonymityCompliant}, cohort_size=${cohortSize}`);
+                } catch (updateError) {
+                    console.error('Warning: Could not update k-anonymity status in database:', updateError.message);
                 }
             }
         }
@@ -470,7 +521,7 @@ router.get('/leaderboard', (req, res) => {
 // ===================
 
 // Get cohort statistics
-router.get('/enterprise/cohorts', verifyApiKey, (req, res) => {
+router.get('/enterprise/cohorts', enterpriseRateLimit, verifyApiKey, (req, res) => {
     try {
         const stats = cohortService.getCohortStats();
         const allCohorts = cohortService.getAllCohorts();
@@ -490,7 +541,7 @@ router.get('/enterprise/cohorts', verifyApiKey, (req, res) => {
 });
 
 // Get consent ledger for audit
-router.get('/enterprise/consent-ledger', verifyApiKey, (req, res) => {
+router.get('/enterprise/consent-ledger', enterpriseRateLimit, verifyApiKey, (req, res) => {
     try {
         const { start_date, end_date } = req.query;
 
@@ -509,27 +560,66 @@ router.get('/enterprise/consent-ledger', verifyApiKey, (req, res) => {
     }
 });
 
-// Get sellable data in enterprise format
-router.get('/enterprise/dataset', verifyApiKey, (req, res) => {
+// Get sellable data in enterprise format (enhanced with database support)
+router.get('/enterprise/dataset', enterpriseRateLimit, verifyApiKey, async (req, res) => {
     try {
-        const { platform, format = 'json', limit = 1000 } = req.query;
+        const { 
+            platform, 
+            format = 'json', 
+            limit = 1000,
+            dataType,
+            minOrders,
+            minGMV,
+            lifestyleSegment,
+            cityCluster,
+            startDate,
+            endDate
+        } = req.query;
 
-        const contributions = jsonStorage.getContributions();
+        // Build filters object
+        const filters = {
+            dataType,
+            minOrders: minOrders ? parseInt(minOrders) : null,
+            minGMV: minGMV ? parseFloat(minGMV) : null,
+            lifestyleSegment,
+            cityCluster,
+            startDate,
+            endDate,
+            limit: parseInt(limit)
+        };
 
-        // Filter to only contributions with sellable data
-        let sellableRecords = contributions
-            .filter(c => c.sellableData)
-            .map(c => c.sellableData);
+        // Remove null filters
+        Object.keys(filters).forEach(key => filters[key] === null && delete filters[key]);
 
-        // Filter by platform if specified
-        if (platform) {
-            sellableRecords = sellableRecords.filter(r =>
-                r.data?.transaction_summary?.platform?.includes(platform)
+        // Use database export service if available
+        const { exportContributionsJSON, exportContributionsCSV } = await import('./database/exportService.js');
+        
+        let contributions;
+        let sellableRecords;
+
+        if (format === 'csv') {
+            const csv = await exportContributionsCSV(filters);
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition',
+                `attachment; filename="MYRAD_Dataset_${new Date().toISOString().split('T')[0]}.csv"`
             );
+            return res.send(csv);
         }
 
-        // Apply limit
-        sellableRecords = sellableRecords.slice(0, parseInt(limit));
+        // Get contributions from database or JSON fallback
+        contributions = await exportContributionsJSON(filters);
+        
+        // Filter to only contributions with sellable data
+        sellableRecords = contributions
+            .filter(c => c.sellable_data || c.sellableData)
+            .map(c => c.sellable_data || c.sellableData);
+
+        // Filter by platform if specified (legacy support)
+        if (platform) {
+            sellableRecords = sellableRecords.filter(r =>
+                r.dataset_id?.includes(platform) || r.platform?.includes(platform)
+            );
+        }
 
         // Return in requested format
         if (format === 'jsonl') {
@@ -544,9 +634,9 @@ router.get('/enterprise/dataset', verifyApiKey, (req, res) => {
             success: true,
             dataset_info: {
                 total_records: sellableRecords.length,
-                platforms: [...new Set(sellableRecords.map(r => r.data?.transaction_summary?.platform))],
+                platforms: [...new Set(sellableRecords.map(r => r.dataset_id || r.platform))],
                 generated_at: new Date().toISOString(),
-                format: 'myrad_v1'
+                format: 'myrad_v2'
             },
             records: sellableRecords
         });
@@ -556,8 +646,62 @@ router.get('/enterprise/dataset', verifyApiKey, (req, res) => {
     }
 });
 
+// Enhanced analytics export endpoint with filtering
+router.get('/enterprise/export/analytics', enterpriseRateLimit, verifyApiKey, async (req, res) => {
+    try {
+        const {
+            format = 'json',
+            dataType,
+            minOrders,
+            minGMV,
+            lifestyleSegment,
+            cityCluster,
+            startDate,
+            endDate,
+            limit,
+            offset
+        } = req.query;
+
+        const filters = {};
+        if (dataType) filters.dataType = dataType;
+        if (minOrders) filters.minOrders = parseInt(minOrders);
+        if (minGMV) filters.minGMV = parseFloat(minGMV);
+        if (lifestyleSegment) filters.lifestyleSegment = lifestyleSegment;
+        if (cityCluster) filters.cityCluster = cityCluster;
+        if (startDate) filters.startDate = startDate;
+        if (endDate) filters.endDate = endDate;
+        if (limit) filters.limit = parseInt(limit);
+        if (offset) filters.offset = parseInt(offset);
+
+        const { exportContributionsJSON, exportContributionsCSV, getExportMetadata } = await import('./database/exportService.js');
+
+        if (format === 'csv') {
+            const csv = await exportContributionsCSV(filters);
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition',
+                `attachment; filename="MYRAD_Analytics_${new Date().toISOString().split('T')[0]}.csv"`
+            );
+            return res.send(csv);
+        }
+
+        const data = await exportContributionsJSON(filters);
+        const metadata = await getExportMetadata(filters);
+
+        res.json({
+            success: true,
+            metadata,
+            data,
+            count: data.length,
+            exported_at: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Analytics export error:', error);
+        res.status(500).json({ error: 'Failed to export analytics data' });
+    }
+});
+
 // Get anonymized data (legacy endpoint)
-router.get('/enterprise/data', verifyApiKey, (req, res) => {
+router.get('/enterprise/data', enterpriseRateLimit, verifyApiKey, (req, res) => {
     try {
         const { limit, offset, dataType } = req.query;
 
@@ -587,7 +731,7 @@ router.get('/enterprise/data', verifyApiKey, (req, res) => {
 });
 
 // Get aggregated insights
-router.get('/enterprise/insights', verifyApiKey, (req, res) => {
+router.get('/enterprise/insights', enterpriseRateLimit, verifyApiKey, (req, res) => {
     try {
         const allData = jsonStorage.getAllAnonymizedData();
         const users = jsonStorage.getUsers();
@@ -626,14 +770,34 @@ router.get('/enterprise/insights', verifyApiKey, (req, res) => {
     }
 });
 
-// Generate API key (admin endpoint - for testing/demo)
-router.post('/enterprise/keys', (req, res) => {
+// Generate API key (admin endpoint - protected by ADMIN_SECRET)
+const apiKeyGenerationRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // Only 5 API key generations per hour
+  message: 'Too many API key generation attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.post('/enterprise/keys', apiKeyGenerationRateLimit, (req, res) => {
     try {
         const { name, adminSecret } = req.body;
 
-        // Simple admin auth (replace with proper auth in production)
+        // Admin authentication required
+        if (!process.env.ADMIN_SECRET) {
+            console.error('❌ ADMIN_SECRET not configured - API key generation disabled');
+            return res.status(503).json({ 
+                error: 'API key generation is not configured',
+                message: 'Admin secret not set on server'
+            });
+        }
+
         if (adminSecret !== process.env.ADMIN_SECRET) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            console.warn(`⚠️  Failed admin secret attempt from IP: ${req.ip}`);
+            return res.status(401).json({ 
+                error: 'Unauthorized',
+                message: 'Invalid admin secret'
+            });
         }
 
         if (!name) {

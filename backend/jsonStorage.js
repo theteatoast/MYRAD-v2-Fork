@@ -47,9 +47,29 @@ initFile(GITHUB_CONTRIBUTIONS_FILE, []);
 const readJSON = (filePath) => {
     try {
         const data = fs.readFileSync(filePath, 'utf8');
+        // Handle empty files gracefully
+        if (!data || data.trim() === '') {
+            // Initialize empty file with empty array
+            fs.writeFileSync(filePath, JSON.stringify([], null, 2));
+            return [];
+        }
         return JSON.parse(data);
     } catch (error) {
-        console.error(`Error reading ${filePath}:`, error);
+        // If file is empty or invalid, initialize it with empty array
+        if (error instanceof SyntaxError && fs.existsSync(filePath)) {
+            const stats = fs.statSync(filePath);
+            if (stats.size === 0) {
+                fs.writeFileSync(filePath, JSON.stringify([], null, 2));
+                return [];
+            }
+        }
+        // Only log non-empty file errors (suppress empty file errors)
+        if (fs.existsSync(filePath)) {
+            const stats = fs.statSync(filePath);
+            if (stats.size > 0) {
+                console.error(`Error reading ${filePath}:`, error.message);
+            }
+        }
         return [];
     }
 };
@@ -252,7 +272,20 @@ export const saveContributions = (contributions, dataType = null) => {
     return writeJSON(CONTRIBUTIONS_FILE, contributions);
 };
 
-export const getUserContributions = (userId) => {
+export const getUserContributions = async (userId) => {
+    // Use database if enabled, otherwise fallback to JSON (for backwards compatibility)
+    const config = await import('./config.js');
+    if (config.default.DB_USE_DATABASE && config.default.DATABASE_URL) {
+        try {
+            const { getUserContributions: dbGetUserContributions } = await import('./database/contributionService.js');
+            return await dbGetUserContributions(userId);
+        } catch (error) {
+            console.error('Error getting user contributions from database, falling back to JSON:', error);
+            // Fallback to JSON for backwards compatibility
+        }
+    }
+    
+    // Fallback to JSON (legacy)
     const contributions = getContributions();
     return contributions.filter(c => c.userId === userId);
 };
@@ -283,9 +316,8 @@ export const getCohortSizes = () => {
     return cohortCounts;
 };
 
-export const addContribution = (userId, data) => {
+export const addContribution = async (userId, data) => {
     const dataType = data.dataType || 'general';
-    const contributions = getContributions(dataType);
     const newContribution = {
         id: Date.now().toString(),
         userId,
@@ -298,8 +330,23 @@ export const addContribution = (userId, data) => {
         status: 'verified',
         createdAt: new Date().toISOString()
     };
-    contributions.push(newContribution);
-    saveContributions(contributions, dataType);
+
+    // DATABASE-ONLY: Save to PostgreSQL database (primary storage)
+    const config = await import('./config.js');
+    if (config.default.DB_USE_DATABASE && config.default.DATABASE_URL) {
+        try {
+            const { saveContribution } = await import('./database/contributionService.js');
+            const result = await saveContribution(newContribution);
+            if (!result?.success) {
+                throw new Error('Database save failed');
+            }
+        } catch (dbError) {
+            console.error('❌ Failed to save to database:', dbError.message);
+            throw new Error('Failed to save contribution to database');
+        }
+    } else {
+        throw new Error('Database is required but not configured. Set DATABASE_URL environment variable.');
+    }
 
     // Award points for contribution
     addPoints(userId, 500, 'data_contribution');

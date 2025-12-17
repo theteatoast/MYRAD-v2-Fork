@@ -146,7 +146,14 @@ const DashboardPage = () => {
       const APP_SECRET = import.meta.env.VITE_RECLAIM_APP_SECRET;
 
       if (!APP_ID || !APP_SECRET) {
-        alert('❌ Reclaim configuration incomplete. Check your .env file.');
+        showToast('error', 'Configuration Error', 'Reclaim configuration incomplete. Check your .env file.');
+        setContributing(null);
+        return;
+      }
+
+      if (!provider.providerId || provider.providerId.trim() === '') {
+        showToast('error', 'Configuration Error', `${provider.name} provider ID is not configured. Please set VITE_${provider.id.toUpperCase()}_PROVIDER_ID in your .env file.`);
+        setContributing(null);
         return;
       }
 

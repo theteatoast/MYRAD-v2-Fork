@@ -42,11 +42,27 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
+// Test database connection on startup (if enabled)
+if (config.DB_USE_DATABASE && config.DATABASE_URL) {
+  import('./database/db.js').then(({ testConnection }) => {
+    testConnection().catch(err => {
+      console.warn('⚠️  Database connection test failed (continuing without DB):', err.message);
+    });
+  }).catch(err => {
+    console.warn('⚠️  Could not load database module:', err.message);
+  });
+}
+
 // Start server
 const server = app.listen(PORT, () => {
   console.log(`🚀 MYRAD Backend API listening at http://localhost:${PORT}`);
   console.log(`📊 MVP Routes: /api/*`);
   console.log(`🏥 Health check: /health`);
+  if (config.DB_USE_DATABASE && config.DATABASE_URL) {
+    console.log(`🗄️  Database: Enabled (PostgreSQL)`);
+  } else {
+    console.log(`🗄️  Database: Disabled (JSON storage only)`);
+  }
 });
 
 // Graceful shutdown

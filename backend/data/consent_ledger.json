@@ -52,5 +52,59 @@
       "method": "zk_proof",
       "verified": true
     }
+  },
+  {
+    "id": "consent_1765917360297_541aa850",
+    "timestamp": "2025-12-16T20:36:00.297Z",
+    "hashed_user_id": "a8dd25267cd44761c8d378342dcf44aa35032764d45c0eddfea4e7c70a2863ba",
+    "hashed_wallet": "e9fcb907dcf57cd2875d2ca50b99678dd2c653989e7d851ad780c6b98c6b9e0b",
+    "proof_id": "0xf328bf99fdc2989768e37785a462491766cbabd6b275cd06119d325db1500af0",
+    "dataset_source": "reclaim_protocol",
+    "data_type": "zomato_order_history",
+    "geo_region": "kolkata",
+    "cohort_id": "zomato_kolkata_budget_occasional",
+    "contribution_id": "1765917360295",
+    "data_summary": {
+      "order_count": 7,
+      "data_window_start": "2024-12-05",
+      "data_window_end": "2025-10-24"
+    },
+    "consent_type": "explicit_contribution",
+    "consent_scope": [
+      "anonymized_behavioral_data",
+      "aggregated_insights"
+    ],
+    "revocable": true,
+    "verification": {
+      "method": "zk_proof",
+      "verified": true
+    }
+  },
+  {
+    "id": "consent_1765975045619_ec2be594",
+    "timestamp": "2025-12-17T12:37:25.619Z",
+    "hashed_user_id": "a8dd25267cd44761c8d378342dcf44aa35032764d45c0eddfea4e7c70a2863ba",
+    "hashed_wallet": "e9fcb907dcf57cd2875d2ca50b99678dd2c653989e7d851ad780c6b98c6b9e0b",
+    "proof_id": "0x513b752d0f4b9fe2c00618a0a928137bb3e82546639b39422df5c9103721a1d3",
+    "dataset_source": "reclaim_protocol",
+    "data_type": "github_profile",
+    "geo_region": "unknown",
+    "cohort_id": "github_intermediate_regular",
+    "contribution_id": "1765975044575",
+    "data_summary": {
+      "order_count": 0,
+      "data_window_start": null,
+      "data_window_end": null
+    },
+    "consent_type": "explicit_contribution",
+    "consent_scope": [
+      "anonymized_behavioral_data",
+      "aggregated_insights"
+    ],
+    "revocable": true,
+    "verification": {
+      "method": "zk_proof",
+      "verified": true
+    }
   }
 ]

@@ -113,10 +113,28 @@ npm run dev
 ### Environment Variables
 
 ```env
+# Frontend
 VITE_PRIVY_APP_ID=your_privy_app_id
 VITE_RECLAIM_APP_ID=your_reclaim_app_id
 VITE_RECLAIM_APP_SECRET=your_reclaim_secret
+VITE_ZOMATO_PROVIDER_ID=your_zomato_provider_id
+VITE_GITHUB_PROVIDER_ID=your_github_provider_id
+
+# Backend
+DATABASE_URL=your_neon_postgres_connection_string  # REQUIRED - Database is the primary storage
+DB_USE_DATABASE=true  # Set to 'false' to disable database (not recommended)
+JSON_STORAGE_ENABLED=false  # Database-only mode (default). Set to 'true' only for development/backup
+PORT=4000
+ADMIN_SECRET=your_secure_admin_secret_for_api_key_generation  # Required for generating API keys
 ```
+
+**Database Setup (Optional but Recommended):**
+1. Create a PostgreSQL database on [Neon](https://neon.tech) (free tier available)
+2. Copy your connection string to `DATABASE_URL`
+3. Run migrations: `npm run db:migrate`
+4. (Optional) Migrate existing data: `npm run db:migrate:data`
+
+**Note:** The provider IDs (`VITE_ZOMATO_PROVIDER_ID` and `VITE_GITHUB_PROVIDER_ID`) are required for Reclaim Protocol verification. These can be obtained from the Reclaim Protocol dashboard when you register your app and configure providers.
 
 ---
 

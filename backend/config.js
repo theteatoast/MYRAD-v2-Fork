@@ -15,5 +15,13 @@ export default {
   DOWNLOAD_SECRET: process.env.DOWNLOAD_SECRET || "secret",
   DB_FILE: path.join(__dirname, "db.json"),
   DATASETS_FILE: path.join(__dirname, "../datasets.json"),
-  MAX_BLOCK_RANGE: parseInt(process.env.MAX_BLOCK_RANGE) || 10 // Free tier RPC limit
+  MAX_BLOCK_RANGE: parseInt(process.env.MAX_BLOCK_RANGE) || 10, // Free tier RPC limit
+  // PostgreSQL Database Configuration
+  DATABASE_URL: process.env.DATABASE_URL || process.env.POSTGRES_URL,
+  DB_USE_DATABASE: process.env.DB_USE_DATABASE !== 'false', // Enable DB by default, disable with DB_USE_DATABASE=false
+  
+  // JSON File Storage Configuration
+  // DATABASE-ONLY MODE: JSON storage is disabled by default
+  // Set JSON_STORAGE_ENABLED=true only for development/backup purposes
+  JSON_STORAGE_ENABLED: process.env.JSON_STORAGE_ENABLED === 'true', // Disabled by default - database is primary
 };

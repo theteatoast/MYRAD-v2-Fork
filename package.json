@@ -14,7 +14,12 @@
     "deploy:marketplace": "npx hardhat run scripts/deployMarketplace.js --network baseSepolia",
     "create": "node scripts/createDataCoin.js",
     "listen": "node backend/listener.js",
-    "server": "node backend/server.js"
+    "server": "node backend/server.js",
+    "db:migrate": "node backend/database/migrate.js",
+    "db:migrate:separate": "node backend/database/migrate.js 002_separate_zomato_github_tables.sql",
+    "db:migrate:extended": "node backend/database/migrate.js 003_add_zomato_extended_fields.sql",
+    "db:migrate:data": "node backend/database/migrateData.js",
+    "db:cleanup": "node backend/database/cleanup.js"
   },
   "dependencies": {
     "@coinbase/onchainkit": "^0.36.11",
