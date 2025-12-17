@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { usePrivy } from '@privy-io/react-auth';
 import { ArrowRight, Shield, Lock, Sparkles, CheckCircle, Zap, Eye, Gift, Menu, X } from 'lucide-react';
@@ -303,16 +303,37 @@ const LandingPage = () => {
                         justifyContent: 'space-between',
                         alignItems: 'center'
                     }}>
-                        <Link to="/" style={{ textDecoration: 'none' }}>
-                            <div style={{
-                                fontSize: '20px',
-                                fontWeight: 800,
-                                color: '#1a1a1a',
-                                fontFamily: "'Space Grotesk', sans-serif"
-                            }}>
-                                MYRAD
-                            </div>
-                        </Link>
+<Link to="/" style={{ textDecoration: "none" }}>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      color: "#1a1a1a",
+      fontFamily: "'Space Grotesk', sans-serif",
+    }}
+  >
+    <img
+      src="/logo.png"
+      alt="MYRAD logo"
+      style={{
+        width: "20px",
+        height: "20px",
+        objectFit: "contain",
+      }}
+    />
+
+    <span
+      style={{
+        fontSize: "20px",
+        fontWeight: 800,
+      }}
+    >
+      MYRAD
+    </span>
+  </div>
+</Link>
+
 
                         <nav className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {navLinks.map((link, i) => (
@@ -422,9 +443,9 @@ const LandingPage = () => {
                                 letterSpacing: '-0.04em',
                                 color: '#1a1a1a'
                             }}>
-                                Your Data.
+                                Your Data
                                 <br />
-                                Your Rewards.
+                                Your Rewards
                             </h1>
                         )}
 
@@ -437,7 +458,7 @@ const LandingPage = () => {
                                 margin: '0 auto 48px',
                                 fontWeight: 400
                             }}>
-                                Transform your app activity into rewards with zero-knowledge proofs.
+                                Transform your app activity into rewards with zero knowledge proofs.
                                 Your data stays private. Your rewards stay real.
                             </p>
                         )}
@@ -1093,50 +1114,127 @@ const LandingPage = () => {
                 </section>
 
                 {/* Footer */}
-                <footer style={{
-                    padding: '48px 24px',
-                    borderTop: '1px solid rgba(0,0,0,0.08)'
-                }}>
-                    <div style={{
-                        maxWidth: '1200px',
-                        margin: '0 auto',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '32px'
-                    }}>
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                            gap: '24px'
-                        }}>
-                            <div style={{
-                                fontSize: '22px',
-                                fontWeight: 800,
-                                color: '#1a1a1a',
-                                fontFamily: "'Space Grotesk', sans-serif"
-                            }}>
-                                MYRAD
-                            </div>
-                            <nav style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
-                                <a href="#how-it-works" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>How It Works</a>
-                                <Link to="/buyers" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>For Buyers</Link>
-                                <Link to="/privacy" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>Privacy</Link>
-                                <Link to="/terms" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>Terms</Link>
-                            </nav>
-                        </div>
-                        <div style={{
-                            paddingTop: '24px',
-                            borderTop: '1px solid rgba(0,0,0,0.08)',
-                            textAlign: 'center',
-                            color: 'rgba(0,0,0,0.4)',
-                            fontSize: '13px'
-                        }}>
-                            © 2024 MYRAD Labs. All rights reserved.
-                        </div>
-                    </div>
-                </footer>
+<footer
+  style={{
+    background: "#f8f9fa",
+    color: "#1a1a1a",
+    padding: "50px 24px 25px",
+    position: "relative",
+    overflow: "hidden",
+    fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    textAlign: 'left'
+  }}
+>
+
+<div
+  style={{
+    display: "flex",
+    justifyContent: "center", // ✅ centers the whole footer group
+  }}
+>
+
+  {/* Top content */}
+  <div
+    style={{
+      maxWidth: "1200px",
+      margin: "0 auto",
+      display: "grid",
+      gridTemplateColumns: "1.5fr 1fr 1fr 1fr",
+      gap: "100px",
+    }}
+  >
+    {/* Brand */}
+<div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  }}
+>
+  {/* Logo + MYRAD (same line) */}
+  <div
+    style={{
+      display: "flex",
+      alignItems: "left",
+      gap: "10px",
+    }}
+  >
+    <img
+      src="/logo.png"
+      alt="MYRAD logo"
+      style={{
+        width: "22px",
+        height: "22px",
+        objectFit: "contain",
+      }}
+    />
+
+    <div
+      style={{
+        fontSize: "18px",
+        fontWeight: 700,
+        letterSpacing: "0.5px",
+      }}
+    >
+      MYRAD
+    </div>
+  </div>
+
+  {/* Description (next line) */}
+  <p
+    style={{
+      fontSize: "14px",
+      lineHeight: "1.6",
+      color: "rgba(0,0,0,0.6)",
+      maxWidth: "260px",
+      margin: 0,
+    }}
+  >
+    Empowering decentralized data exchange with transparency and trust.
+  </p>
+</div>
+
+    <div>
+      <div style={{ fontSize: "16px", fontWeight: 600, marginBottom: "16px", color: "#1a1a1a" }}>Products</div>
+      <a href="/about" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>Features</a>
+      <a href="/team" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>How to get started</a>
+    </div>
+
+    {/* Company */}
+    <div>
+      <div style={{ fontSize: "16px", fontWeight: 600, marginBottom: "16px", color: "#1a1a1a" }}>Company</div>
+      <a href="/about" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>About</a>
+      <a href="/team" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>Team</a>
+    </div>
+
+    {/* Connect */}
+    <div>
+      <div style={{ fontSize: "16px", fontWeight: 600, marginBottom: "16px", color: "#1a1a1a" }}>Connect</div>
+      <a href="https://x.com" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>X</a>
+      <a href="https://x.com" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>Telegram</a>
+      <a href="https://github.com" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>GitHub</a>
+    </div>
+  </div>
+</div>
+  {/* Huge MYRAD text */}
+  <div
+    style={{
+      marginTop: "50px",
+      fontSize: "18vw",
+      fontWeight: 900,
+      letterSpacing: "-0.04em",
+      lineHeight: "0.9",
+      color: "#000000",
+      opacity: 0.95,
+      textAlign: "center",
+      userSelect: "none",
+    }}
+  >
+    MYRAD
+  </div>
+
+</footer>
+
             </div>
         </div>
     );

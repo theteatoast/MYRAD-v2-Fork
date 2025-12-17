@@ -310,7 +310,7 @@ const DashboardPage = () => {
           <div className="logo-placeholder" style={{ width: 24 }}></div> {/* Spacer to keep layout if needed, or just empty */}
 
           <div className="header-right">
-            {walletAddress && (
+            {shortWalletAddress && (
               <button onClick={copyWalletAddress} className="wallet-badge">
                 <Wallet size={14} />
                 {copiedAddress ? 'Copied!' : shortWalletAddress}
@@ -332,8 +332,8 @@ const DashboardPage = () => {
         {/* Welcome Section */}
         <section className="welcome-section">
           <div className="welcome-text">
-            <h1>Welcome back! 👋</h1>
-            <p>{user?.email?.address || 'User'}</p>
+            <h1>Welcome back!</h1>
+            <p>{user?.email?.address || walletAddress || 'User'}</p>
           </div>
           <button
             onClick={() => fetchUserData(true)}
@@ -794,7 +794,8 @@ const styles = `
   
   .provider-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: 16px;
     margin-bottom: 20px;
   }
@@ -810,8 +811,22 @@ const styles = `
     font-size: 28px;
   }
   
-  .provider-info h3 { font-size: 18px; font-weight: 600; margin-bottom: 2px; }
-  .provider-info span { font-size: 13px; color: #666; }
+  .provider-info {
+    flex: 1;
+  }
+  
+  .provider-info h3 { 
+    font-size: 18px; 
+    font-weight: 600; 
+    margin-bottom: 4px;
+    color: #1a1a1a;
+  }
+  
+  .provider-info span { 
+    font-size: 13px; 
+    color: #666;
+    display: block;
+  }
   
   .provider-reward {
     margin-left: auto;
@@ -828,54 +843,72 @@ const styles = `
   .reward-label { font-size: 12px; color: #666; }
   
   .qr-section {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 16px;
-    padding: 24px;
+    padding: 32px 24px;
     text-align: center;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
   }
   
   .qr-title {
-    color: var(--provider-color);
-    font-size: 14px;
+    color: #1a1a1a;
+    font-size: 15px;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin: 0;
   }
   
   .qr-container {
     background: #fff;
-    padding: 16px;
-    border-radius: 12px;
-    display: inline-block;
-    margin-bottom: 16px;
+    padding: 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
   }
   
   .qr-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #1a1a1a;
+    border-radius: 10px;
     color: #fff;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  
+  .qr-link:hover {
+    background: #333;
+    transform: translateY(-2px);
   }
   
   .qr-cancel {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    width: 100%;
-    padding: 10px;
-    background: none;
+    gap: 6px;
+    padding: 10px 20px;
+    background: transparent;
     border: none;
     color: #666;
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .qr-cancel:hover {
+    color: #1a1a1a;
   }
   
   .btn-verify {
