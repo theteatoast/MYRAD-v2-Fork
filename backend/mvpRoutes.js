@@ -18,13 +18,14 @@ const enterpriseRateLimit = rateLimit({
     legacyHeaders: false,
     keyGenerator: (req) => {
         // Rate limit by API key instead of IP
-        return req.headers['x-api-key'] || req.ip;
+        // Using only the API key avoids IPv6 handling issues
+        return req.headers['x-api-key'] || 'unknown';
     },
     skip: (req) => {
         // Skip rate limiting if no API key (will fail auth anyway)
         return !req.headers['x-api-key'];
     },
-    validate: { xForwardedForHeader: false }
+    validate: { xForwardedForHeader: false, default: true }
 });
 
 
