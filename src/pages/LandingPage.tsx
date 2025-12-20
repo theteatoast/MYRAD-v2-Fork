@@ -5,6 +5,7 @@ import { ArrowRight, Shield, Lock, Sparkles, CheckCircle, Zap, Eye, Gift } from 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DynamicBackground from '../components/DynamicBackground';
+import LandingBackground from "../components/LandingBackground";
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -79,6 +80,7 @@ const LandingPage = () => {
             overflowX: 'hidden',
             position: 'relative'
         }}>
+            
             {/* Three.js Particle Background */}
             <DynamicBackground />
 
@@ -277,7 +279,6 @@ const LandingPage = () => {
                                 color: '#4F46E5',
                                 marginBottom: '32px'
                             }}>
-                                <Sparkles size={14} />
                                 Privacy First Data Network
                             </div>
                         )}
@@ -333,7 +334,7 @@ const LandingPage = () => {
                                 </button>
 
                                 <a
-                                    href="#how-it-works"
+                                    href="https://docs.myradhq.xyz"
                                     className="btn-secondary"
                                     style={{
                                         padding: '18px 40px',
@@ -358,8 +359,8 @@ Learn More                                </a>
                                 flexWrap: 'wrap'
                             }}>
                                 {[
-                                    { icon: Shield, label: 'Zero-Knowledge Proofs' },
-                                    { icon: Lock, label: 'End-to-End Encrypted' },
+                                    { icon: Shield, label: 'Zero Knowledge Proofs' },
+                                    { icon: Lock, label: 'End to End Encrypted' },
                                     { icon: CheckCircle, label: 'No PII Stored' }
                                 ].map((item, i) => (
                                     <div key={i} style={{
@@ -491,7 +492,7 @@ Learn More                                </a>
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.1em'
                             }}>
-                                Zero-Knowledge Proofs
+                                Zero Knowledge Proofs
                             </p>
                             <h2 style={{
                                 fontSize: '42px',
