@@ -11,3 +11,7 @@ DROP TABLE IF EXISTS contributions CASCADE;
 -- Note: The function update_updated_at_column() is kept as it's used by the new tables
 
 
+
+
+
+
