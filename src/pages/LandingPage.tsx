@@ -1,30 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect} from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { usePrivy } from '@privy-io/react-auth';
-import { ArrowRight, Shield, Lock, Sparkles, CheckCircle, Zap, Eye, Gift, Menu, X } from 'lucide-react';
+import { ArrowRight, Shield, Lock, Sparkles, CheckCircle, Zap, Eye, Gift } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import DynamicBackground from '../components/DynamicBackground';
 
 const LandingPage = () => {
     const navigate = useNavigate();
     const { login, authenticated, ready } = usePrivy();
-    const [scrollY, setScrollY] = useState(0);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isButtonHovered, setIsButtonHovered] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => setScrollY(window.scrollY);
         const handleMouseMove = (e: MouseEvent) => {
             setMousePos({ x: e.clientX, y: e.clientY });
         };
 
-        window.addEventListener('scroll', handleScroll);
         window.addEventListener('mousemove', handleMouseMove);
         setTimeout(() => setIsVisible(true), 100);
 
         return () => {
-            window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('mousemove', handleMouseMove);
         };
     }, []);
@@ -42,13 +39,6 @@ const LandingPage = () => {
             login();
         }
     };
-
-    const navLinks = [
-        { label: 'For Users', href: '#how-it-works' },
-        { label: 'For Buyers', href: '/buyers' },
-        { label: 'How It Works', href: '#how-it-works' },
-        { label: 'About', href: '/about' },
-    ];
 
     const steps = [
         {
@@ -181,22 +171,6 @@ const LandingPage = () => {
                     border-color: rgba(0, 0, 0, 0.35);
                 }
                 
-                /* Navigation */
-                .nav-link {
-                    color: rgba(0, 0, 0, 0.5);
-                    text-decoration: none;
-                    font-size: 14px;
-                    font-weight: 500;
-                    padding: 8px 16px;
-                    border-radius: 8px;
-                    transition: all 0.25s ease;
-                }
-                
-                .nav-link:hover {
-                    color: #1a1a1a;
-                    background: rgba(0, 0, 0, 0.05);
-                }
-                
                 /* Step number */
                 .step-number {
                     position: absolute;
@@ -211,15 +185,9 @@ const LandingPage = () => {
                 
                 /* Responsive */
                 @media (max-width: 768px) {
-                    .desktop-nav { display: none !important; }
-                    .mobile-menu-btn { display: flex !important; }
                     .hero-title { font-size: 40px !important; }
                     .hero-subtitle { font-size: 16px !important; }
                     .characters-container { display: none !important; }
-                }
-                
-                @media (min-width: 769px) {
-                    .mobile-menu-btn { display: none !important; }
                 }
                 
                 html { scroll-behavior: smooth; }
@@ -283,106 +251,7 @@ const LandingPage = () => {
 
             {/* Main Content */}
             <div className="content-wrapper">
-                {/* Header */}
-                <header style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    zIndex: 1000,
-                    background: scrollY > 50 ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
-                    backdropFilter: scrollY > 50 ? 'blur(20px)' : 'none',
-                    borderBottom: scrollY > 50 ? '1px solid rgba(0,0,0,0.08)' : 'none',
-                    transition: 'all 0.4s ease'
-                }}>
-                    <div style={{
-                        maxWidth: '1280px',
-                        margin: '0 auto',
-                        padding: '20px 24px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}>
-                        <Link to="/" style={{ textDecoration: 'none' }}>
-                            <div style={{
-                                fontSize: '20px',
-                                fontWeight: 800,
-                                color: '#1a1a1a',
-                                fontFamily: "'Space Grotesk', sans-serif"
-                            }}>
-                                MYRAD
-                            </div>
-                        </Link>
-
-                        <nav className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {navLinks.map((link, i) => (
-                                link.href.startsWith('#') ? (
-                                    <a key={i} href={link.href} className="nav-link">{link.label}</a>
-                                ) : (
-                                    <Link key={i} to={link.href} className="nav-link">{link.label}</Link>
-                                )
-                            ))}
-                        </nav>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <button
-                                onClick={handleGetStarted}
-                                className="btn-primary"
-                                style={{
-                                    padding: '12px 28px',
-                                    borderRadius: '10px',
-                                    fontSize: '14px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                }}
-                            >
-                                {authenticated ? 'Dashboard' : 'Get Started'}
-                                <ArrowRight size={16} />
-                            </button>
-
-                            <button
-                                className="mobile-menu-btn"
-                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                                style={{
-                                    background: 'transparent',
-                                    border: '1px solid rgba(0,0,0,0.15)',
-                                    borderRadius: '8px',
-                                    color: '#1a1a1a',
-                                    cursor: 'pointer',
-                                    padding: '10px',
-                                    display: 'none',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}
-                            >
-                                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Mobile Menu */}
-                    {mobileMenuOpen && (
-                        <div style={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: 0,
-                            right: 0,
-                            background: 'rgba(255, 255, 255, 0.98)',
-                            backdropFilter: 'blur(20px)',
-                            borderBottom: '1px solid rgba(0,0,0,0.08)',
-                            padding: '20px 24px'
-                        }}>
-                            {navLinks.map((link, i) => (
-                                link.href.startsWith('#') ? (
-                                    <a key={i} href={link.href} className="nav-link" style={{ display: 'block', padding: '14px 0' }} onClick={() => setMobileMenuOpen(false)}>{link.label}</a>
-                                ) : (
-                                    <Link key={i} to={link.href} className="nav-link" style={{ display: 'block', padding: '14px 0' }} onClick={() => setMobileMenuOpen(false)}>{link.label}</Link>
-                                )
-                            ))}
-                        </div>
-                    )}
-                </header>
+                <Header />
 
                 {/* Hero Section */}
                 <section style={{
@@ -409,7 +278,7 @@ const LandingPage = () => {
                                 marginBottom: '32px'
                             }}>
                                 <Sparkles size={14} />
-                                Privacy-First Data Network
+                                Privacy First Data Network
                             </div>
                         )}
 
@@ -422,9 +291,9 @@ const LandingPage = () => {
                                 letterSpacing: '-0.04em',
                                 color: '#1a1a1a'
                             }}>
-                                Your Data.
+                                Your Data
                                 <br />
-                                Your Rewards.
+                                Your Rewards
                             </h1>
                         )}
 
@@ -437,7 +306,7 @@ const LandingPage = () => {
                                 margin: '0 auto 48px',
                                 fontWeight: 400
                             }}>
-                                Transform your app activity into rewards with zero-knowledge proofs.
+                                Transform your app activity into rewards with zero knowledge proofs.
                                 Your data stays private. Your rewards stay real.
                             </p>
                         )}
@@ -476,8 +345,7 @@ const LandingPage = () => {
                                         gap: '8px'
                                     }}
                                 >
-                                    How It Works
-                                </a>
+Learn More                                </a>
                             </div>
                         )}
 
@@ -980,7 +848,7 @@ const LandingPage = () => {
                                     ))}
                                 </ul>
                                 <button
-                                    onClick={handleGetStarted}
+                                    onClick={() => navigate('/dashboard')}
                                     className="btn-primary"
                                     style={{
                                         width: '100%',
@@ -1092,51 +960,8 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                {/* Footer */}
-                <footer style={{
-                    padding: '48px 24px',
-                    borderTop: '1px solid rgba(0,0,0,0.08)'
-                }}>
-                    <div style={{
-                        maxWidth: '1200px',
-                        margin: '0 auto',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '32px'
-                    }}>
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                            gap: '24px'
-                        }}>
-                            <div style={{
-                                fontSize: '22px',
-                                fontWeight: 800,
-                                color: '#1a1a1a',
-                                fontFamily: "'Space Grotesk', sans-serif"
-                            }}>
-                                MYRAD
-                            </div>
-                            <nav style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
-                                <a href="#how-it-works" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>How It Works</a>
-                                <Link to="/buyers" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>For Buyers</Link>
-                                <Link to="/privacy" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>Privacy</Link>
-                                <Link to="/terms" style={{ color: 'rgba(0,0,0,0.5)', textDecoration: 'none', fontSize: '14px' }}>Terms</Link>
-                            </nav>
-                        </div>
-                        <div style={{
-                            paddingTop: '24px',
-                            borderTop: '1px solid rgba(0,0,0,0.08)',
-                            textAlign: 'center',
-                            color: 'rgba(0,0,0,0.4)',
-                            fontSize: '13px'
-                        }}>
-                            © 2024 MYRAD Labs. All rights reserved.
-                        </div>
-                    </div>
-                </footer>
+                <Footer />
+
             </div>
         </div>
     );
