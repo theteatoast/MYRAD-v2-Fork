@@ -18,7 +18,9 @@
     "db:migrate": "node backend/database/migrate.js",
     "db:migrate:separate": "node backend/database/migrate.js 002_separate_zomato_github_tables.sql",
     "db:migrate:extended": "node backend/database/migrate.js 003_add_zomato_extended_fields.sql",
+    "db:migrate:netflix": "node backend/database/migrate.js 005_add_netflix_content_catalog.sql",
     "db:migrate:data": "node backend/database/migrateData.js",
+    "db:backfill:netflix": "node backend/database/backfillNetflixContent.js",
     "db:cleanup": "node backend/database/cleanup.js"
   },
   "dependencies": {

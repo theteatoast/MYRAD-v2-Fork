@@ -157,6 +157,9 @@ function extractNetflixFields(sellableData) {
     segment_id: sellableData?.audience_segment?.segment_id || null,
     cohort_id: sellableData?.metadata?.privacy_compliance?.cohort_id || null,
     data_quality_score: toInt(sellableData?.metadata?.data_quality?.score * 100),
+    // Content catalog fields
+    movies_watched: sellableData?.content_catalog?.movies_watched || null,
+    top_series: sellableData?.content_catalog?.top_series || null,
   };
 }
 
@@ -323,10 +326,12 @@ export async function saveContribution(contribution) {
             day_of_week_distribution, time_of_day_curve,
             subscription_tier, account_age_years, member_since_year, loyalty_tier, churn_risk,
             kids_content_pct, mature_content_pct, primary_audience,
-            segment_id, cohort_id, data_quality_score
+            segment_id, cohort_id, data_quality_score,
+            movies_watched, top_series
           ) VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-            $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33
+            $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33,
+            $34, $35
           )
           ON CONFLICT (id) DO UPDATE SET
             status = EXCLUDED.status,
@@ -337,6 +342,8 @@ export async function saveContribution(contribution) {
             binge_score = EXCLUDED.binge_score,
             engagement_tier = EXCLUDED.engagement_tier,
             top_genres = EXCLUDED.top_genres,
+            movies_watched = EXCLUDED.movies_watched,
+            top_series = EXCLUDED.top_series,
             updated_at = NOW()`,
           [
             id, String(userId), reclaimProofId, status, processingMethod, createdAt || new Date(),
@@ -366,7 +373,9 @@ export async function saveContribution(contribution) {
             indexedFields.primary_audience,
             indexedFields.segment_id,
             indexedFields.cohort_id,
-            indexedFields.data_quality_score
+            indexedFields.data_quality_score,
+            indexedFields.movies_watched ? JSON.stringify(indexedFields.movies_watched) : null,
+            indexedFields.top_series ? JSON.stringify(indexedFields.top_series) : null
           ]
         );
 
