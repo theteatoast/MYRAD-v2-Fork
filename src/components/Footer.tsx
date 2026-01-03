@@ -122,15 +122,15 @@ const Footer = () => {
                         >
                             Privacy Policy
                         </a>
-                        <a href="/" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>Contact</a>
+                        <a href="/contact" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>Contact</a>
                     </div>
 
                     {/* Connect */}
                     <div>
                         <div style={{ fontSize: "16px", fontWeight: 600, marginBottom: "16px", color: "#1a1a1a" }}>Connect</div>
-                        <a href="https://x.com" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>X</a>
-                        <a href="https://x.com" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>Telegram</a>
-                        <a href="https://github.com" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>GitHub</a>
+                        <a href="https://x.com/myrad_hq" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>X</a>
+                        <a href="https://t.me/+KOAn6WDf7AdmNTI1" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>Telegram</a>
+                        <a href="https://github.com/Myrad-Labs/" style={{ display: "block", color: "rgba(0,0,0,0.6)", textDecoration: "none", marginBottom: "8px", fontSize: "14px" }}>GitHub</a>
                     </div>
                 </div>
             </div>

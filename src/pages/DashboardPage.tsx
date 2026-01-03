@@ -3,7 +3,8 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useNavigate } from 'react-router-dom';
 import { Coins, TrendingUp, Loader2, Zap, CheckCircle, RefreshCw, Wallet, Copy, X, Sparkles, Award, Clock, ExternalLink, AlertCircle } from 'lucide-react';
 import QRCode from 'react-qr-code';
-
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import github from "../assets/github.png";
 import zomato from "../assets/zomato.png";
 import netflix from "../assets/netflix.png";
@@ -23,7 +24,7 @@ const PROVIDERS = [
     name: 'Zomato',
     description: 'Order History',
     providerId: import.meta.env.VITE_ZOMATO_PROVIDER_ID || '',
-color: '#000000',
+    color: '#000000',
     bgGradient: 'linear-gradient(135deg, #333333 0%, #000000 100%)',
     points: 10, // Updated to match new reward system (base points)
     dataType: 'zomato_order_history',
@@ -34,7 +35,7 @@ color: '#000000',
     name: 'GitHub',
     description: 'Developer Profile',
     providerId: import.meta.env.VITE_GITHUB_PROVIDER_ID || '',
-color: '#000000',
+    color: '#000000',
     bgGradient: 'linear-gradient(135deg, #24292e 0%, #0d1117 100%)',
     points: 15,
     dataType: 'github_profile',
@@ -98,7 +99,7 @@ const DashboardPage = () => {
   // Get wallet address from Privy user
   const walletAddress = user?.wallet?.address || null;
   const shortWalletAddress = walletAddress
-    ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+    ? `${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}`
     : null;
 
   // Fetch user data
@@ -303,7 +304,7 @@ const DashboardPage = () => {
 
   return (
 
-    
+
     <div className="dashboard">
       <style>{styles}</style>
 
@@ -323,13 +324,16 @@ const DashboardPage = () => {
         </div>
       )}
 
+      <Header />
+<br></br>
+<br></br>
+<br></br>
+      <main className="dashboard-main">
+        {/* Welcome Section */}
+        <section className="welcome-section">
+          <div className="welcome-text">
+            <h1>Welcome back!</h1>
 
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-content">
-          <div className="logo-placeholder" style={{ width: 24 }}></div> {/* Spacer to keep layout if needed, or just empty */}
-
-          <div className="header-right">
             {shortWalletAddress && (
               <button onClick={copyWalletAddress} className="wallet-badge">
                 <Wallet size={14} />
@@ -337,33 +341,25 @@ const DashboardPage = () => {
                 <Copy size={12} />
               </button>
             )}
-
-            <div className="points-badge">
-              <Coins size={14} />
-              <span>{points?.balance?.toLocaleString() || 0}</span>
-            </div>
-
-            <button onClick={logout} className="btn-logout">Sign Out</button>
           </div>
-        </div>
-      </header>
 
-      <main className="dashboard-main">
-        {/* Welcome Section */}
-        <section className="welcome-section">
-          <div className="welcome-text">
-            <h1>Welcome back!</h1>
-            <p>{user?.email?.address || walletAddress || 'User'}</p>
+          {/* ACTION BUTTONS */}
+          <div className="welcome-actions">
+            <button
+              onClick={() => fetchUserData(true)}
+              className="btn-refresh"
+              disabled={refreshing}
+            >
+              <RefreshCw size={16} className={refreshing ? 'spin' : ''} />
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+
+            <button onClick={logout} className="btn-logout">
+              Sign Out
+            </button>
           </div>
-          <button
-            onClick={() => fetchUserData(true)}
-            className="btn-refresh"
-            disabled={refreshing}
-          >
-            <RefreshCw size={16} className={refreshing ? 'spin' : ''} />
-            {refreshing ? 'Refreshing...' : 'Refresh'}
-          </button>
         </section>
+
 
         {loading ? (
           <div className="loading-state">
@@ -412,35 +408,34 @@ const DashboardPage = () => {
                 <p>Verify your data to earn points</p>
               </div>
 
-          <div className="providers-grid">
-  {PROVIDERS.map((provider) => (
-    <div
-      key={provider.id}
-      className={`provider-card ${
-        activeProvider === provider.id ? "active" : ""
-      }`}
-      style={{ "--provider-color": provider.color } as React.CSSProperties}
-    >
-   <div className="provider-header">
-  <div className="provider-info">
-    <div className="provider-name-row">
-      <img
-        src={provider.logo}
-        alt={`${provider.name} logo`}
-        className="provider-logo"
-      />
-      <h3 className="provider-name">{provider.name}</h3>
-    </div>
+              <div className="providers-grid">
+                {PROVIDERS.map((provider) => (
+                  <div
+                    key={provider.id}
+                    className={`provider-card ${activeProvider === provider.id ? "active" : ""
+                      }`}
+                    style={{ "--provider-color": provider.color } as React.CSSProperties}
+                  >
+                    <div className="provider-header">
+                      <div className="provider-info">
+                        <div className="provider-name-row">
+                          <img
+                            src={provider.logo}
+                            alt={`${provider.name} logo`}
+                            className="provider-logo"
+                          />
+                          <h3 className="provider-name">{provider.name}</h3>
+                        </div>
 
-    <span className="provider-desc">{provider.description}</span>
-  </div>
+                        <span className="provider-desc">{provider.description}</span>
+                      </div>
 
-  <div className="provider-reward">
-    <span className="reward-value">+{provider.points}</span>
-    <span className="reward-label">points</span>
-  </div>
-</div>
-    
+                      <div className="provider-reward">
+                        <span className="reward-value">+{provider.points}</span>
+                        <span className="reward-label">points</span>
+                      </div>
+                    </div>
+
 
                     {/* QR Code Section */}
                     {activeProvider === provider.id && verificationUrl && (
@@ -512,6 +507,7 @@ const DashboardPage = () => {
           </>
         )}
       </main>
+      <Footer />
     </div>
   );
 };
@@ -669,7 +665,7 @@ const styles = `
     padding: 8px 12px;
     background: rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 100px;
+    border-radius: 8px;
     color: rgba(0, 0, 0, 0.7);
     font-size: 13px;
     font-weight: 500;
@@ -1113,6 +1109,45 @@ const styles = `
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
   }
+
+  /* Welcome section layout */
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Right-side action buttons */
+.welcome-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Make buttons same height */
+.btn-refresh,
+.btn-logout {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .welcome-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .welcome-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 `;
 
 export default DashboardPage;
