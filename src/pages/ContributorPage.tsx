@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Lock, Database, Search, ChevronRight, ArrowRight } from 'lucide-react';
+import { usePrivy } from '@privy-io/react-auth';
+import { ArrowRight, Shield, Lock, Zap, Eye, Gift, Sparkles } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DynamicBackground from '../components/DynamicBackground';
 
-const LandingPage = () => {
+const ContributorPage = () => {
     const navigate = useNavigate();
+    const { login, authenticated, ready } = usePrivy();
     const [isVisible, setIsVisible] = useState(false);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isButtonHovered, setIsButtonHovered] = useState(false);
@@ -24,13 +26,50 @@ const LandingPage = () => {
         };
     }, []);
 
-    // Redirect logic removed - Landing page is for everyone (mostly B2B info), 
-    // but we won't auto-redirect logged in users away from the landing page
-    // unless they specifically try to "Login" or go to dashboard.
+    useEffect(() => {
+        if (authenticated && ready) {
+            navigate('/dashboard');
+        }
+    }, [authenticated, ready, navigate]);
 
-    const handleContributorClick = () => {
-        navigate('/contribute');
+    const handleGetStarted = () => {
+        if (authenticated) {
+            navigate('/dashboard');
+        } else {
+            login();
+        }
     };
+
+    const steps = [
+        {
+            number: '01',
+            icon: Lock,
+            title: 'Quick & Secure Login',
+            description: 'Use your email or social accounts to sign up instantly with Privy Auth. No wallet setup required.',
+            tech: 'Privy Auth'
+        },
+        {
+            number: '02',
+            icon: Eye,
+            title: 'Contribute Privately',
+            description: 'Connect apps like Zomato. We verify your order history without seeing raw data.',
+            tech: 'Reclaim Protocol'
+        },
+        {
+            number: '03',
+            icon: Shield,
+            title: 'Zero-Knowledge Proofs',
+            description: 'A cryptographic guarantee that your activity is real. No raw logs, no PII ever leaves your device.',
+            tech: 'ZK Proofs'
+        },
+        {
+            number: '04',
+            icon: Gift,
+            title: 'Earn Rewards',
+            description: 'For every verified insight you contribute, you earn points instantly. Track on your dashboard!',
+            tech: 'Instant Rewards'
+        }
+    ];
 
     return (
         <div style={{
@@ -65,6 +104,7 @@ const LandingPage = () => {
                 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); }
                 .btn-secondary { background: transparent; border: 1px solid rgba(0, 0, 0, 0.2); color: #1a1a1a; font-weight: 500; cursor: pointer; transition: all 0.3s; }
                 .btn-secondary:hover { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.35); }
+                .step-number { position: absolute; top: 24px; right: 24px; font-size: 64px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: rgba(0, 0, 0, 0.04); line-height: 1; }
                 @media (max-width: 768px) { .characters-container { display: none !important; } }
                 html { scroll-behavior: smooth; }
                 .characters-container { position: fixed; left: 30px; bottom: 20px; width: 320px; height: 300px; z-index: 100; pointer-events: none; }
@@ -81,58 +121,32 @@ const LandingPage = () => {
             <div className="content-wrapper">
                 <Header />
 
-                {/* Hero Section */}
                 <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '140px 24px 100px', position: 'relative' }}>
-                    <div style={{ maxWidth: '900px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                    <div style={{ maxWidth: '800px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
                         {isVisible && (
                             <div className="animate-fadeInUp delay-100" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(79, 70, 229, 0.08)', border: '1px solid rgba(79, 70, 229, 0.15)', borderRadius: '100px', fontSize: '13px', fontWeight: 500, color: '#4F46E5', marginBottom: '32px' }}>
-                                Verified Human Behavior Data
+                                For Contributors
                             </div>
                         )}
                         {isVisible && (
-                            <h1 className="animate-fadeInUp delay-200" style={{ fontSize: '64px', fontWeight: 700, lineHeight: 1.05, marginBottom: '24px', letterSpacing: '-0.04em', color: '#1a1a1a', fontFamily: 'Space Grotesk, sans-serif' }}>
-                                Verified Human Behavior Data<br />Without Personal Information
+                            <h1 className="animate-fadeInUp delay-200" style={{ fontSize: '68px', fontWeight: 700, lineHeight: 1.05, marginBottom: '24px', letterSpacing: '-0.04em', color: '#1a1a1a', fontFamily: 'Space Grotesk, sans-serif' }}>
+                                Earn from your digital activities<br />without exposing your privacy
                             </h1>
                         )}
                         {isVisible && (
-                            <p className="animate-fadeInUp delay-300" style={{ fontSize: '20px', color: 'rgba(0, 0, 0, 0.6)', lineHeight: 1.6, maxWidth: '680px', margin: '0 auto 48px', fontWeight: 400 }}>
-                                MYRAD delivers cryptographically verified human signals that AI and data teams can trust, without collecting or storing personal data.
+                            <p className="animate-fadeInUp delay-300" style={{ fontSize: '18px', color: 'rgba(0, 0, 0, 0.6)', lineHeight: 1.7, maxWidth: '550px', margin: '0 auto 48px', fontWeight: 400 }}>
+                                Transform your app activity into rewards with zero knowledge proofs. Your data stays private. Your rewards stay real.
                             </p>
                         )}
                         {isVisible && (
                             <div className="animate-fadeInUp delay-400" style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                <button onClick={() => navigate('/buyers')} className="btn-primary" style={{ padding: '18px 40px', borderRadius: '12px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    Explore Datasets <Search size={18} />
+                                <button onClick={handleGetStarted} className="btn-primary" onMouseEnter={() => setIsButtonHovered(true)} onMouseLeave={() => setIsButtonHovered(false)} style={{ padding: '18px 40px', borderRadius: '12px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <Zap size={18} /> Start Earning <ArrowRight size={18} />
                                 </button>
-                                <button
-                                    onClick={handleContributorClick}
-                                    className="btn-secondary"
-                                    onMouseEnter={() => setIsButtonHovered(true)}
-                                    onMouseLeave={() => setIsButtonHovered(false)}
-                                    style={{ padding: '18px 40px', borderRadius: '12px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}
-                                >
-                                    Become a Contributor <ChevronRight size={18} />
-                                </button>
-                            </div>
-                        )}
-
-                        {isVisible && (
-                            <div className="animate-fadeInUp delay-500" style={{ display: 'flex', gap: '40px', justifyContent: 'center', marginTop: '80px', flexWrap: 'wrap' }}>
-                                {[
-                                    { icon: Shield, label: 'Verified Sources' },
-                                    { icon: Lock, label: 'Zero PII' },
-                                    { icon: Database, label: 'Training Ready' }
-                                ].map((item, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'rgba(0,0,0,0.5)', fontSize: '14px', fontWeight: 500 }}>
-                                        <item.icon size={18} color="rgba(0,0,0,0.4)" />
-                                        {item.label}
-                                    </div>
-                                ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Keep Characters on Home Page too (branding) */}
                     {isVisible && (
                         <div className="characters-container animate-fadeInUp delay-300">
                             {(() => {
@@ -175,86 +189,38 @@ const LandingPage = () => {
                     )}
                 </section>
 
-                {/* Value Props Section - B2B Focus */}
-                <section style={{ padding: '120px 24px', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+                <section id="how-it-works" style={{ padding: '120px 24px', borderTop: '1px solid rgba(0,0,0,0.08)', position: 'relative' }}>
                     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-                            {[
-                                {
-                                    icon: Shield,
-                                    title: "Verified at the Source",
-                                    desc: "Behavior is verified directly from user approved sources using cryptographic proofs, not scraping or estimation."
-                                },
-                                {
-                                    icon: Lock,
-                                    title: "No Personal Data",
-                                    desc: "MYRAD never collects raw histories, identifiers, or private content. Only aggregated, non-identifying signals are produced."
-                                },
-                                {
-                                    icon: Database,
-                                    title: "Built for Real Decisions",
-                                    desc: "Data is delivered as cohort level signals designed for AI training, evaluation, and analytics, not dashboards."
-                                }
-                            ].map((card, i) => (
-                                <div key={i} className="card" style={{ padding: '40px', borderRadius: '20px' }}>
-                                    <div style={{ width: '48px', height: '48px', background: 'rgba(79, 70, 229, 0.08)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-                                        <card.icon size={24} color="#4F46E5" />
+                        <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                            <h2 style={{ fontSize: '44px', fontWeight: 700, marginBottom: '16px', letterSpacing: '-0.03em', color: '#1a1a1a', fontFamily: 'Space Grotesk, sans-serif' }}>Simple. Secure. Rewarding.</h2>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                            {steps.map((step, i) => (
+                                <div key={i} className="card" style={{ borderRadius: '20px', padding: '36px', position: 'relative', overflow: 'hidden' }}>
+                                    <div className="step-number">{step.number}</div>
+                                    <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(79, 70, 229, 0.08)', border: '1px solid rgba(79, 70, 229, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+                                        <step.icon size={24} color="#4F46E5" />
                                     </div>
-                                    <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px', color: '#1a1a1a' }}>{card.title}</h3>
-                                    <p style={{ color: 'rgba(0,0,0,0.5)', lineHeight: 1.7 }}>{card.desc}</p>
+                                    <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px', color: '#1a1a1a' }}>{step.title}</h3>
+                                    <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '14px', lineHeight: 1.7, marginBottom: '20px' }}>{step.description}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* Who uses MYRAD */}
-                <section style={{ padding: '120px 24px', borderTop: '1px solid rgba(0,0,0,0.08)', background: '#fafafa' }}>
-                    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center' }}>
-                            <div>
-                                <h2 style={{ fontSize: '42px', fontWeight: 700, marginBottom: '24px', color: '#1a1a1a', fontFamily: 'Space Grotesk, sans-serif' }}>Who Uses MYRAD</h2>
-                                <p style={{ fontSize: '18px', color: 'rgba(0,0,0,0.6)', lineHeight: 1.7, maxWidth: '480px' }}>
-                                    Trusted by teams building the next generation of AI, analytics, and consumer insights.
-                                </p>
-                            </div>
-                            <div style={{ display: 'grid', gap: '16px' }}>
-                                {[
-                                    { title: "AI & ML Teams", desc: "Training and evaluating models" },
-                                    { title: "Research Institutions", desc: "Working with human behavior data" },
-                                    { title: "Analytics Teams", desc: "Needing reliable preference signals" },
-                                    { title: "Product Teams", desc: "Validating user behavior patterns" }
-                                ].map((item, i) => (
-                                    <div key={i} style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                        <div style={{ fontWeight: 600, color: '#1a1a1a', minWidth: '160px' }}>{item.title}</div>
-                                        <div style={{ flex: 1, height: '1px', background: '#f3f4f6' }}></div>
-                                        <div style={{ color: 'rgba(0,0,0,0.5)', fontSize: '14px' }}>{item.desc}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* CTA Section */}
                 <section style={{ padding: '140px 24px', borderTop: '1px solid rgba(0,0,0,0.08)', textAlign: 'center' }}>
-                    <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-                        <h2 style={{ fontSize: '48px', fontWeight: 700, marginBottom: '20px', letterSpacing: '-0.03em', color: '#1a1a1a', fontFamily: 'Space Grotesk, sans-serif' }}>
-                            Start Building with Verified Data
-                        </h2>
-                        <p style={{ fontSize: '17px', color: 'rgba(0,0,0,0.5)', marginBottom: '40px', lineHeight: 1.7 }}>
-                            Access the world's first diverse, cryptographically verified human behavior dataset.
-                        </p>
-                        <button onClick={() => navigate('/buyers')} className="btn-primary" style={{ padding: '20px 48px', borderRadius: '14px', fontSize: '17px', display: 'inline-flex', alignItems: 'center', gap: '12px' }}>
-                            Get Data Access <ArrowRight size={18} />
+                    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+                        <h2 style={{ fontSize: '48px', fontWeight: 700, marginBottom: '20px', letterSpacing: '-0.03em', color: '#1a1a1a', fontFamily: 'Space Grotesk, sans-serif' }}>Ready to Own Your Data?</h2>
+                        <button onClick={handleGetStarted} className="btn-primary" style={{ padding: '20px 48px', borderRadius: '14px', fontSize: '17px', display: 'inline-flex', alignItems: 'center', gap: '12px' }}>
+                            <Sparkles size={18} /> Get Started Free <ArrowRight size={18} />
                         </button>
                     </div>
                 </section>
-
                 <Footer />
             </div>
         </div>
     );
 };
 
-export default LandingPage;
+export default ContributorPage;
