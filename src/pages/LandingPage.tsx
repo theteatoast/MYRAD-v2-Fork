@@ -82,19 +82,19 @@ const LandingPage = () => {
             `}</style>
 
             {/* Dynamic Waves Background */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100vh', zIndex: 0 }}>
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
                 <Waves
-                    lineColor="rgba(0,0,0,0.08)"
+                    lineColor="rgba(0,0,0,0.11)"
                     backgroundColor="#ffffff"
-                    waveSpeedX={0.02}
-                    waveSpeedY={0.01}
-                    waveAmpX={40}
-                    waveAmpY={20}
-                    friction={0.9}
+                    waveSpeedX={0.01}
+                    waveSpeedY={0.005}
+                    waveAmpX={30}
+                    waveAmpY={15}
+                    friction={0.95}
                     tension={0.01}
-                    maxCursorMove={120}
-                    xGap={12}
-                    yGap={36}
+                    maxCursorMove={100}
+                    xGap={10}
+                    yGap={30}
                 />
             </div>
 
@@ -102,7 +102,7 @@ const LandingPage = () => {
                 <Header />
 
                 {/* Hero Section */}
-                <section style={{ minHeight: '90vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '160px 24px 100px', position: 'relative' }}>
+                <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '160px 24px 100px', position: 'relative' }}>
                     <div style={{ maxWidth: '1000px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
                         {isVisible && (
                             <h1 className="animate-fadeInUp delay-100" style={{
