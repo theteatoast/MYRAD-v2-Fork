@@ -68,7 +68,6 @@ export function processGithubData(extractedData, options = {}) {
 
         // Social metrics
         social_metrics: {
-            follower_count: followers, // Store actual count for database indexing
             follower_tier: getFollowerTier(followers),
             follower_count_range: getFollowerRange(followers),
             is_influencer: followers >= 1000
@@ -103,8 +102,8 @@ export function processGithubData(extractedData, options = {}) {
                 attestor: 'reclaim_network'
             },
             privacy_compliance: {
-                pii_stripped: true,
-                username_hashed: true,
+                pii_stripped: false,  // GitHub usernames are public
+                username_hashed: false,
                 gdpr_compatible: true,
                 ccpa_compatible: true
             },
@@ -119,7 +118,8 @@ export function processGithubData(extractedData, options = {}) {
     return {
         success: true,
         data: {
-            username: username !== 'unknown' ? username : null, // Keep full username
+            // GitHub username is public, no need to mask
+            username: username !== 'unknown' ? username : null,
             followers,
             contributions,
             accountAgeYears: parseFloat(accountAge) || null

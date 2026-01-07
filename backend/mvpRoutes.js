@@ -298,8 +298,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
                 const { transformToSellableData } = await import('./zomatoPipeline.js');
 
                 console.log('📦 Processing zomato data through enterprise pipeline...');
-                // DEBUG: Print raw data
-                console.log('RAW ZOMATO DATA:', JSON.stringify(anonymizedData, null, 2));
+                // Raw data logging removed for security
 
                 const result = await transformToSellableData(anonymizedData, 'zomato', user.id);
 
@@ -321,7 +320,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
                 const { processGithubData } = await import('./githubPipeline.js');
 
                 console.log('📦 Processing GitHub data through developer pipeline...');
-                console.log('RAW GITHUB DATA:', JSON.stringify(anonymizedData, null, 2));
+                // Raw data logging removed for security
 
                 const result = processGithubData(anonymizedData);
 
@@ -343,7 +342,7 @@ router.post('/contribute', verifyPrivyToken, async (req, res) => {
                 const { processNetflixData } = await import('./netflixPipeline.js');
 
                 console.log('📺 Processing Netflix data through streaming intelligence pipeline...');
-                console.log('RAW NETFLIX DATA:', JSON.stringify(anonymizedData, null, 2));
+                // Raw data logging removed for security
 
                 const result = await processNetflixData(anonymizedData);
 

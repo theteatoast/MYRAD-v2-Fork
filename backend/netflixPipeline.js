@@ -520,26 +520,6 @@ export async function processNetflixData(extractedData, options = {}) {
         genreCluster
     );
 
-    // Process complete watch history with parsed information
-    const completeWatchHistory = watchHistory.map(item => {
-        const parsed = parseTitle(item.title);
-        const genre = inferGenre(parsed.displayTitle);
-        const watchDate = parseWatchDate(item.date);
-        
-        return {
-            original_title: item.title,
-            parsed_title: parsed.displayTitle,
-            content_type: parsed.type,
-            series_name: parsed.seriesName,
-            season: parsed.season,
-            episode_title: parsed.episodeTitle,
-            watch_date: watchDate ? watchDate.toISOString() : null,
-            watch_date_raw: item.date,
-            inferred_genre: genre,
-            genre_category: GENRE_CATEGORIES[genre] || GENRE_CATEGORIES.default
-        };
-    });
-
     // Build industry-standard sellable record
     const sellableRecord = {
         schema_version: '2.0',
@@ -549,6 +529,7 @@ export async function processNetflixData(extractedData, options = {}) {
 
         // === USER PROFILE (Anonymized) ===
         user_profile: {
+            profile_name_initial: displayName ? displayName.charAt(0) : null,
             total_titles_watched: totalTitles,
             total_liked: totalLiked,
             total_disliked: totalDisliked,
@@ -564,9 +545,6 @@ export async function processNetflixData(extractedData, options = {}) {
             data_window_days: DATA_WINDOW_DAYS,
             engagement_tier: engagementTier
         },
-
-        // === COMPLETE WATCH HISTORY (All Shows/Episodes Watched) ===
-        watch_history: completeWatchHistory,
 
         // === CONTENT CATALOG (Industry Sellable - Show Names) ===
         content_catalog: {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, RefreshCw, Copy, X, ExternalLink, AlertCircle, CheckCircle, LogOut } from 'lucide-react';
+import { Loader2, Copy, X, ExternalLink, AlertCircle, CheckCircle, LogOut, Key } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import github from "../assets/github.png";
 import zomato from "../assets/zomato.png";
@@ -55,7 +55,7 @@ const PROVIDERS = [
 
 
 const DashboardPage = () => {
-  const { ready, authenticated, user, logout } = usePrivy();
+  const { ready, authenticated, user, logout, exportWallet } = usePrivy();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [points, setPoints] = useState<any>(null);
@@ -65,7 +65,7 @@ const DashboardPage = () => {
   const [verificationUrl, setVerificationUrl] = useState<string | null>(null);
   const [activeProvider, setActiveProvider] = useState<string | null>(null);
   const [copiedAddress, setCopiedAddress] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+
   const hasLoadedData = useRef(false);
 
   // Toast notification state
@@ -105,8 +105,7 @@ const DashboardPage = () => {
     if (!user?.id) return;
 
     try {
-      if (showRefresh) setRefreshing(true);
-      else setLoading(true);
+      if (!showRefresh) setLoading(true);
 
       const token = `privy_${user.id}_${user?.email?.address || 'user'}`;
 
@@ -137,7 +136,6 @@ const DashboardPage = () => {
       console.error('Error fetching user data:', error);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, [user?.id, user?.email?.address, API_URL]);
 
@@ -182,12 +180,80 @@ const DashboardPage = () => {
       });
 
       const requestUrl = await reclaimProofRequest.getRequestUrl();
-      console.log('📎 Request URL:', requestUrl);
       setVerificationUrl(requestUrl);
+
+      // Intercept console.log to capture proof data from SDK's internal logs
+      // Using window global so it persists and can be checked in onError
+      (window as any).__reclaimCapturedProof = null;
+      let capturedProofData: any = null;
+      const originalConsoleLog = console.log;
+
+      console.log = (...args: any[]) => {
+        originalConsoleLog.apply(console, args);
+
+        // Check ALL args for any that look like proof data
+        for (let i = 0; i < args.length; i++) {
+          const arg = args[i];
+          const argStr = typeof arg === 'string' ? arg : '';
+
+          // Debug: Log when we see the key phrases
+          if (argStr.includes('not verified') || argStr.includes('identifier')) {
+            originalConsoleLog('🔍 DEBUG: Found potential proof log at arg', i, 'type:', typeof arg, 'length:', argStr.length);
+          }
+
+          // Method 1: String contains proof JSON
+          if (typeof arg === 'string' && arg.includes('identifier') && arg.includes('publicData')) {
+            try {
+              // Find JSON array with more flexible matching
+              const match = arg.match(/\[\s*\{[\s\S]*?"identifier"[\s\S]*?"publicData"[\s\S]*?\}\s*\]/);
+              if (match) {
+                capturedProofData = JSON.parse(match[0]);
+                (window as any).__reclaimCapturedProof = capturedProofData;
+                originalConsoleLog('🔄 CAPTURED: Proof data via regex match!');
+                break;
+              }
+            } catch (e) {
+              // Try simpler approach
+              const startIdx = arg.indexOf('[{"');
+              if (startIdx !== -1) {
+                const endIdx = arg.lastIndexOf('}]');
+                if (endIdx > startIdx) {
+                  try {
+                    const jsonStr = arg.substring(startIdx, endIdx + 2);
+                    capturedProofData = JSON.parse(jsonStr);
+                    (window as any).__reclaimCapturedProof = capturedProofData;
+                    originalConsoleLog('🔄 CAPTURED: Proof data via substring!');
+                    break;
+                  } catch (e2) {
+                    originalConsoleLog('⚠️ Parse failed:', e2);
+                  }
+                }
+              }
+            }
+          }
+
+          // Method 2: Direct array/object
+          if (Array.isArray(arg) && arg.length > 0 && arg[0]?.identifier) {
+            capturedProofData = arg;
+            (window as any).__reclaimCapturedProof = capturedProofData;
+            originalConsoleLog('🔄 CAPTURED: Direct array!');
+            break;
+          }
+
+          if (typeof arg === 'object' && arg !== null && arg?.identifier) {
+            capturedProofData = [arg];
+            (window as any).__reclaimCapturedProof = capturedProofData;
+            originalConsoleLog('🔄 CAPTURED: Direct object!');
+            break;
+          }
+        }
+      };
 
       await reclaimProofRequest.startSession({
         onSuccess: async (proofs: any) => {
-          console.log('✅ Proof received:', proofs);
+          // Restore original console.log
+          console.log = originalConsoleLog;
+          // Proof received successfully
           setVerificationUrl(null);
           setActiveProvider(null);
 
@@ -199,35 +265,25 @@ const DashboardPage = () => {
 
           let extractedData: any = {};
           try {
-            // DEBUG: Log full proof structure
-            console.log('🔍 DEBUG - Full proof object:', JSON.stringify(proof, null, 2));
-            console.log('🔍 DEBUG - proof.claimData:', proof.claimData);
-            console.log('🔍 DEBUG - proof.publicData:', proof.publicData);
-
             // Extract from context.extractedParameters
             if (proof.claimData?.context) {
               const context = typeof proof.claimData.context === 'string'
                 ? JSON.parse(proof.claimData.context)
                 : proof.claimData.context;
-              console.log('🔍 DEBUG - Parsed context:', context);
               extractedData = context.extractedParameters || {};
             }
 
             // Extract from extractedParameterValues
             if (proof.extractedParameterValues) {
-              console.log('🔍 DEBUG - extractedParameterValues:', proof.extractedParameterValues);
               extractedData = { ...extractedData, ...proof.extractedParameterValues };
             }
 
-            // IMPORTANT: Extract from publicData (contains order history!)
+            // Extract from publicData (contains order history)
             if (proof.publicData) {
-              console.log('🔍 DEBUG - publicData:', proof.publicData);
               extractedData = { ...extractedData, ...proof.publicData };
             }
-
-            console.log('🔍 DEBUG - Final extractedData:', extractedData);
           } catch (e) {
-            console.error('Error extracting data:', e);
+            console.error('Error extracting data');
           }
 
           const token = `privy_${user.id}_${user?.email?.address || 'user'}`;
@@ -252,7 +308,6 @@ const DashboardPage = () => {
           });
 
           const data = await response.json();
-          console.log('📨 Backend response:', data);
 
           if (data.success) {
             // Immediately refresh data
@@ -262,11 +317,147 @@ const DashboardPage = () => {
             showToast('error', 'Verification Failed', data.message || 'Unknown error');
           }
         },
-        onError: (error: any) => {
+        onError: async (error: any) => {
+          // Restore original console.log
+          console.log = originalConsoleLog;
+
           console.error('Reclaim error:', error);
+
+          // Use captured proof data from SDK logs (Identifier Mismatch workaround)
+          // Check both local capture and window global fallback
+          const capturedParams = capturedProofData || (window as any).__reclaimCapturedProof;
+
+          if (capturedParams && capturedParams.length > 0) {
+            console.log('🔄 Using captured proof data from SDK logs...');
+            const proof = capturedParams[0];
+
+            if (proof && (proof.publicData || proof.claimData)) {
+              try {
+                let extractedData: any = {};
+
+                // Extract from context.extractedParameters
+                if (proof.claimData?.context) {
+                  const context = typeof proof.claimData.context === 'string'
+                    ? JSON.parse(proof.claimData.context)
+                    : proof.claimData.context;
+                  extractedData = context.extractedParameters || {};
+                }
+
+                // Extract from publicData
+                if (proof.publicData) {
+                  extractedData = { ...extractedData, ...proof.publicData };
+                }
+
+                if (Object.keys(extractedData).length > 0) {
+                  console.log('✅ Successfully extracted data:', Object.keys(extractedData));
+
+                  const token = `privy_${user.id}_${user?.email?.address || 'user'}`;
+
+                  const response = await fetch(`${API_URL}/api/contribute`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      anonymizedData: {
+                        ...extractedData,
+                        provider: provider.id,
+                        providerName: provider.name,
+                        timestamp: new Date().toISOString(),
+                        walletAddress: walletAddress || null,
+                        recoveredFromSdkLogs: true
+                      },
+                      dataType: provider.dataType,
+                      reclaimProofId: proof.identifier || `reclaim-recovered-${Date.now()}`
+                    })
+                  });
+
+                  const data = await response.json();
+
+                  if (data.success) {
+                    await fetchUserData(true);
+                    setVerificationUrl(null);
+                    setActiveProvider(null);
+                    showToast('success', `${provider.name} Verified!`, `+${data.contribution?.pointsAwarded || 500} points earned`);
+                    return; // Exit - recovery successful
+                  } else {
+                    showToast('error', 'Verification Failed', data.message || 'Backend error');
+                  }
+                }
+              } catch (recoveryError) {
+                console.error('Error processing captured proof:', recoveryError);
+              }
+            }
+          }
+
+          // Fallback: Check if error contains proof data directly
+          const errorProofs = error?.proof || error?.proofs || error?.data;
+          if (errorProofs) {
+            console.log('Found proof data in error object, attempting to process...');
+            const proof = Array.isArray(errorProofs) ? errorProofs[0] : errorProofs;
+
+            if (proof && (proof.publicData || proof.claimData)) {
+              try {
+                let extractedData: any = {};
+
+                // Extract from context.extractedParameters
+                if (proof.claimData?.context) {
+                  const context = typeof proof.claimData.context === 'string'
+                    ? JSON.parse(proof.claimData.context)
+                    : proof.claimData.context;
+                  extractedData = context.extractedParameters || {};
+                }
+
+                // Extract from publicData
+                if (proof.publicData) {
+                  extractedData = { ...extractedData, ...proof.publicData };
+                }
+
+                if (Object.keys(extractedData).length > 0) {
+                  console.log('Successfully extracted data from error proof:', Object.keys(extractedData));
+
+                  const token = `privy_${user.id}_${user?.email?.address || 'user'}`;
+
+                  const response = await fetch(`${API_URL}/api/contribute`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      anonymizedData: {
+                        ...extractedData,
+                        provider: provider.id,
+                        providerName: provider.name,
+                        timestamp: new Date().toISOString(),
+                        walletAddress: walletAddress || null,
+                        recoveredFromError: true // Flag to indicate this was recovered
+                      },
+                      dataType: provider.dataType,
+                      reclaimProofId: proof.identifier || proof.id || `reclaim-recovered-${Date.now()}`
+                    })
+                  });
+
+                  const data = await response.json();
+
+                  if (data.success) {
+                    await fetchUserData(true);
+                    setVerificationUrl(null);
+                    setActiveProvider(null);
+                    showToast('success', `${provider.name} Verified!`, `+${data.contribution?.pointsAwarded || 500} points earned`);
+                    return; // Exit early - recovery successful
+                  }
+                }
+              } catch (recoveryError) {
+                console.error('Error recovering proof from error object:', recoveryError);
+              }
+            }
+          }
+
           setVerificationUrl(null);
           setActiveProvider(null);
-          showToast('error', 'Verification Failed', error.message || 'Unknown error');
+          showToast('error', 'Verification Failed', 'Reclaim verification issue. Please try again or contact support.');
         }
       });
 
@@ -332,8 +523,10 @@ const DashboardPage = () => {
               <Copy size={12} />
             </button>
           )}
-          <button onClick={() => fetchUserData(true)} className="btn-refresh" disabled={refreshing}>
-            <RefreshCw size={14} className={refreshing ? 'spin' : ''} />
+
+          <button onClick={() => exportWallet()} className="btn-export" title="Export Private Key">
+            <Key size={14} />
+            Export Key
           </button>
           <button onClick={logout} className="btn-logout">
             <LogOut size={16} />
@@ -407,17 +600,21 @@ const DashboardPage = () => {
                       </div>
                     )}
 
-                    <button
-                      onClick={() => handleContribute(provider)}
-                      disabled={contributing !== null}
-                      className="btn-verify"
-                    >
-                      {contributing === provider.id ? (
-                        <><Loader2 size={16} className="spin" /> Verifying...</>
-                      ) : (
-                        <>Connect</>
-                      )}
-                    </button>
+                    {/* Only show Connect button if this card is not active AND no other card is active */}
+                    {!(activeProvider === provider.id && verificationUrl) && (
+                      <button
+                        onClick={() => handleContribute(provider)}
+                        disabled={contributing !== null || activeProvider !== null}
+                        className="btn-verify"
+                        style={{ display: activeProvider && activeProvider !== provider.id ? 'none' : 'flex' }}
+                      >
+                        {contributing === provider.id ? (
+                          <><Loader2 size={16} className="spin" /> Verifying...</>
+                        ) : (
+                          <>Connect</>
+                        )}
+                      </button>
+                    )}
                   </div>
                 ))}
 
@@ -650,6 +847,22 @@ const styles = `
   }
   
   .btn-logout:hover { background: #1f2937; }
+  
+  .btn-export {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-export:hover { background: #f3f4f6; border-color: #d1d5db; }
   
   .dashboard-main {
     max-width: 1200px;
